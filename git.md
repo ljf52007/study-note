@@ -4,7 +4,7 @@ https://www.liaoxuefeng.com/wiki/896043488029600/896202780297248
 
 git的简易使用指南网：
 
-https://bootcss.com/p/git-guide/
+https://bootcss.com/p/git-guide
 
 一篇学习git的好文章：
 
@@ -285,13 +285,15 @@ https://www.jianshu.com/p/072587b47515
 
    
 
-2. 衍合指定分支 assignBranch 到自己的分支 curBranch
+2. 衍合指定分支 `assignBranch` 到自己的分支 `curBranch`
 
    ```bash
    # 切换到自己的分支
-   git checkout curBranch
-   # 衍合
+   git checkout <curBranch>
+   # 衍合到指定分支 assignBranch
    git rebase <assignBranch>
+   # 或者
+   git rebase <assignBranch> <curBranch>
    
    ```
 
@@ -301,8 +303,36 @@ https://www.jianshu.com/p/072587b47515
 
    - 我的理解：
      1. 首先从结果上看，不管是merge合并还是rebase衍合，结果都是一样的；
+
      2. 衍合使得提交历史更加的整洁，在查看一个经过衍合的分支的历史记录时会发现，尽管实际的开发工作是并行的， 但它们看上去就像是串行的一样，提交历史是一条直线没有分叉；
-     3. 
+
+        - 合并：
+
+        ![merge](D:\front-end-note\images\git\merge.png)
+
+        - 衍合：衍合的原理是首先找到这两个分支（即当前分支 `experiment`、变基操作的目标基底分支 `master`） 的**最近共同祖先** `C2`，然后对比当前分支`experiment`相对于该祖先的历次提交，**提取相应的修改并存为临时文件**， 然后将当前分支指向目标基底 `C3`, 最后以此将之前另存为临时文件的修改依序应用。
+
+        ![rebase](D:\front-end-note\images\git\rebase.png)
+
+        
+
+     3. 执行衍合的命令
+
+        ```bash
+        git rebase master experiment
+        ```
+
+        经过以下的过程：
+
+        - 切换到当前分支`experiment`
+        - 将`experiment`中比`master`多的`commit`撤销，并将这些`commit`存放在一块临时存储区（`.git/rebase`）
+        - 将`master`中比`experiment`多的`commit`应用到`experiment`上，此时两个分支的状态一致
+        - 将临时存储区的`commit`重新应用到`experiment`上
+        - 解决冲突
+
+     4. 衍合并不是完美无缺的，它需要遵循一条准则：**如果提交存在于你的仓库之外，而别人可能基于这些提交进行开发，那么不要执行变基。**
+
+        意思就是如果你在`experiment`的`commit`已经被你的同事拉下来并进行开发了，此时合并代码就不用`rebase`，而用`merge`
 
 
 
