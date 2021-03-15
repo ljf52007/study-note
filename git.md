@@ -1,3 +1,5 @@
+### 1 网站介绍
+
 廖雪峰的git介绍：
 
 https://www.liaoxuefeng.com/wiki/896043488029600/896202780297248
@@ -11,6 +13,8 @@ https://bootcss.com/p/git-guide
 https://www.jianshu.com/p/072587b47515
 
 
+
+### 2 基础知识
 
 #### 创建版本库
 
@@ -403,3 +407,29 @@ https://www.jianshu.com/p/072587b47515
    ```
 
    
+
+### 3 实操
+
+
+
+工作中，我提交并推送代码到了远端，这时我发现有一个文件是错的，此时正确的做法是：
+
+```bash
+# 回退推送的版本
+# 首先打印日志
+git log 
+# 然后确定要撤销哪个版本A，回退到哪个版本B，执行
+git reset --soft B
+```
+
+或者直接修改错误文件，重新提交和推送。
+
+但是我犯傻，用`revert`执行了撤销提交的命令：
+
+```bash
+# <commit>是指定提交的提交ID，可以在log中查看
+git log
+git revert <commit>
+```
+
+这时就有点尴尬了，此时推送到远端的版本并没有回退，但`commit`已经回退了，且`log`中
