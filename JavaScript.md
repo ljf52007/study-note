@@ -1712,7 +1712,7 @@ console.log(getById(data, 112))
 
 
 
-## 八、ES5中常用的方法
+## ES5中常用的方法
 
 ES5 中给我们新增了一些方法，可以很方便的操作数组或者字符串，这些方法主要包括：
 
@@ -1722,28 +1722,28 @@ ES5 中给我们新增了一些方法，可以很方便的操作数组或者字�
 
 - 对象方法
 
-### 8.1 数组方法
+### 数组方法
 
-#### 8.1.1 创建数组的基本方式
+#### 创建数组的基本方式
 
 1. 使用Array构造函数：
 
    ```js
    var arr = new Array()
+   arr[0] = 1;
+   arr[1] = 2;
    
-   //表示创建length为3的数组
+   // 一个参数表示创建length为num的数组
    var arr = new Array(3)
    
-   //表示创建包含这几项的数组
+   //多个参数表示创建包含这几项的数组
    var arr = new Array('red','yellow','blue')
    ```
-
-   
 
 2. 字面量：
 
    ```js
-   var arr = []
+   var arr = [];
    ```
 
 #### 8.1.2 检测数组
@@ -1762,19 +1762,21 @@ if (Array.isArray(value)){
 
 #### 8.1.3 栈方法
 
-**push**()：添加到末尾，返回修改后数组的长度
+|   方法   |     说明     |        返回值        |
+| :------: | :----------: | :------------------: |
+| `push()` |  添加到末尾  | 返回修改后数组的长度 |
+| `pop()`  | 移除最后一项 |     返回移除的项     |
 
-**pop**()：移除最后一项，返回移除的项
+
 
 #### 8.1.4 队列方法
 
-**shift**()：移除数组第一项，返回移除的项
+|    方法     |            说明            |        返回值        |
+| :---------: | :------------------------: | :------------------: |
+|  `shift()`  |       移除数组第一项       |     返回移除的项     |
+| `unshift()` | 在数组的第一项添加任意个项 | 返回修改后数组的长度 |
 
-结合使用shift() 和push()方法，可以像使用队列一样使用数组
 
-**unshift**()：在数组的第一项添加任意个项，返回数组的长度
-
-结合使用unshift()和pop()方法，可以从相反的方向来模拟队列
 
 #### 8.1.5 排序方法
 
@@ -1897,71 +1899,18 @@ console.log(morePeople.indexOf(person))//0
 
 
 
-#### 8.1.8 迭代方法
+####  8.1.8 迭代方法
 
-##### forEach()
-
-- 语法：
-
-  ```javascript
-  array.forEach(function(currentValue, index, arr))
-  ```
-
-- 说明：
-
-  - currentValue：数组当前项的值
-
-  - index：数组当前项的索引
-
-  - arr：数组对象本身
-
-- 举例：
-
-  ```javascript
-  // forEach 迭代(遍历) 数组
-  var arr = [1, 2, 3];
-  var sum = 0;
-  arr.forEach(function(value, index, array) {
-  	console.log('每个数组元素' + value);
-  	console.log('每个数组元素的索引号' + index);
-  	console.log('数组本身' + array);
-  	sum += value;
-  })
-  console.log(sum);
-  ```
-
-
-
-##### some()
-
-- 语法：
-
-  ```javascript
-  array.some(function(currentValue, index, arr))
-  ```
-
-- 说明：
-
-  - some() 方法用于检测数组中的元素是否满足指定条件.   通俗点 查找数组中是否有满足条件的元素 
-
-  - 注意它**返回值是布尔值**, 如果查找到这个元素, 就返回true ,  如果查找不到就返回false.
-
-  - 如果找到第一个满足条件的元素,则终止循环. 不在继续查找.
-
-  - currentValue: 数组当前项的值
-
-  - index：数组当前项的索引
-
-- 例子：
-
-  ```javascript
-  some 查找数组中是否有满足条件的元素 
-  var arr = [10, 30, 4];
-  var flag = arr.some(function(value) {
-  	return value < 3;
-  });
-  console.log(flag);//false
-  ```
+|   名称    |                           参数                            |             返回值              |                             说明                             |
+| :-------: | :-------------------------------------------------------: | :-----------------------------: | :----------------------------------------------------------: |
+|  forEach  |                   `item`,`index`,`arr`                    |           `undefined`           |                                                              |
+|   some    |                   `item`,`index`,`arr`                    |            `boolean`            | `some` 方法查找数组中是否有满足条件的元素,如果找到第一个满足条件的元素,则`return true`终止循环. 不再继续查找 |
+|   every   |                   `item`,`index`,`arr`                    |            `boolean`            | `every`方法查找数组中是否所有元素都满足条件,如果都满足,返回`true`,有一个不满足则返回`false`并终止循环 |
+|  filter   |                   `item`,`index`,`arr`                    |        返回过滤后的数组         | `filter`方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素,主要用于筛选数组,filter中的回调函数有一个要求: 必须返回一个**boolean**值true: **当返回true时, 函数内部会自动将这次回调的 currentValue 加入到新的数组中**false: **当返回false时, 函数内部会过滤掉这次的 currentValue** |
+|    map    |                   `item`,`index`,`arr`                    |          返回新的数组           | `map`方法也是创建一个数组，新数组中的元素是通过回调函数的返回值决定的 |
+|   find    |                   `item`,`index`,`arr`                    |         匹配的`item`值          |    `find`用于筛选原数组中符合条件的某一项,找到则终止循环     |
+| findIndex |                   `item`,`index`,`arr`                    | 匹配的`index`值，找不到则返回-1 | `findIndex`类似于find,用于筛选原数组中符合条件的某一项的索引,找到则终止循环 |
+|  reduce   | （`preValue`,`curValue`,`index`,`arr`）=> {}，`initValue` |    最后一次迭代的`return`值     | reduce() 常用于对数组中所有的元素进行汇总，上述代码中 **preValue 指的是前一次遍历中的 return 值**，**可以设置它的初始值（如上述代码中初始值为0 ）** |
 
 
 
@@ -2001,95 +1950,99 @@ console.log(morePeople.indexOf(person))//0
    这段代码输出结果为：11、找到了该元素。
 
    在some 里面，**遇到 return true 就是终止遍历，迭代效率更高。**
+   
+   
 
+##### 迭代方法能否改变原数组??
 
+以`forEach`为例
 
-##### filter()
+1. 原数组的`item`是基本数据类型:
 
-- 语法：
+   ```js
+   const array = [1, 2, 3, 4];
+   array.forEach(item => {
+   	item = item * 3
+   })
+   console.log(array); // [1,2,3,4]未改变原数组
+   ```
 
-  ```javascript
-  array.filter(function(currentValue, index, arr))
-  ```
+2. 原数组的`item`是引用类型,改变`item`的属性值
 
-- 说明：
+   ```js
+   const objArr = [{
+       name: 'a',
+       age: 22
+   }, {
+       name: 'b',
+       age: 33
+   }]
+   objArr.forEach(item => {
+       if (item.name === 'a') {
+           item.age = 88
+       }
+   })
+   console.log(objArr); // [{name: "a", age: 88},{name: "b", age: 33}] 数组改变
+   ```
 
-  - filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素,主要用于筛选数组
-  - **注意它直接返回一个新数组**
-  - currentValue: 数组当前项的值
-  - index：数组当前项的索引
-  - arr：数组对象本身
+3. 原数组的`item`是引用类型,对整个`item`赋值
 
-- 注意：
+   ```js
+   const objArr = [{
+       name: 'a',
+       age: 22
+   }, {
+       name: 'b',
+       age: 33
+   }]
+   objArr.forEach(item => {
+       if (item.name === 'a') {
+           item = {name: 'c', age: 88};
+       }
+   })
+   console.log(objArr); // [{name: "a", age: 22},{name: "b", age: 33}] 数组未改变
+   ```
 
-  - filter中的回调函数有一个要求: 必须返回一个**boolean**值
+4. 在迭代中通过`index`来操作 数组
 
-  - true: **当返回true时, 函数内部会自动将这次回调的 currentValue 加入到新的数组中**
+   ```js
+   const objArr = [{
+       name: 'a',
+       age: 22
+   }, {
+       name: 'b',
+       age: 33
+   }];
+   const numArr = [1,2,3,4];
+   objArr.forEach((item, index, arr) => {
+       if (item.name === 'a') {
+           objArr[index] = {name: 'c', age: 99};
+       }
+   })
+   numArr.forEach((item, index, arr) => {
+   	if (item === 2){
+   		arr[index] = 9;
+   	}
+   });
+   console.log(objArr); // [{name: "c", age: 99},{name: "b", age: 33}] 数组改变
+   console.log(numArr); // [1,9,3,4] 数组改变
+   ```
 
-  - false: **当返回false时, 函数内部会过滤掉这次的 currentValue**
+   在`forEach`的迭代中拿到的`item`,是`forEach`新建的元素,与原数组的元素没有关系.
 
-- 例子：
+   `JavaScript`分基本数据类型和引用数据类型,对于基本数据类型`number,string,Boolean,null,undefined`,它们在栈内存中直接存储变量与值.
 
-  ```javascript
-  // filter 筛选数组
-  var arr = [12, 66, 4, 88, 3, 7];
-  var newArr = arr.filter(function(value, index) {
-  	// return value >= 20;
-  	return value % 2 === 0;
-  });
-  console.log(newArr);
-  ```
+   而`Object`属于引用数据类型,栈中只保存了对象的变量以及对应的堆地址,真正的数据是保存在堆内存中.所以操作`Object`是直接操作了原数组对象本身.
 
+   顺带一提,`for...of...`的迭代同理:
 
-
-##### map()
-
-map() 方法也是创建一个数组，新数组中的元素是通过回调函数的返回值决定的。
-
-如：
-
-```javascript
-const num = [1,2,3]
-let newNum = num.map(function(currentValue) {
-	return currentValue * 2
-})
-console.log(newNum)//[2,4,6]
-```
-
-
-
-#### reduce()
-
-先来看reduce的一个例子：
-
-```javascript
-const num = [1,2,3]
-let newNum = num.reduce(function(preValue, currentValue){
-    return preValue + currentValue
-},0)
-```
-
-reduce() 常用于对数组中所有的元素进行汇总，上述代码中 **preValue 指的是前一次遍历中的 return 值**，**可以设置它的初始值（如上述代码中初始值为0 ）**。
-
-上述代码的含义就是对数组进行了求和（好好体会 ）
-
-
-
-#### filter() map() reduce() 结合小案例
-
-```javascript
-const nums = [10, 20, 111, 222, 444, 40, 50]
-
-let total = nums.filter(value => value < 100).map(value => value * 2).reduce((preValue, value) => preValue + value)
-
-console.log(total);
-```
-
-
-
-#### 8.1.8 商品查询案例
-
-（待完善）
+   ```js
+   const arr = [1,2,3,4];
+   for (let item of arr) {
+       item = item * 2;
+   }
+   console.log(arr); // [1,2,3,4] 数组未改变
+   ```
 
 
 
@@ -3371,6 +3324,288 @@ Promise.all() 中需要传入参数，参数是一个可以迭代的对象，比
 
 
 
+### 手写一个Promise
+
+下面是Promise的一个简单用法：
+
+```js
+const p1 = new Promise((resolve, reject) => {
+    resolve('success');
+    reject('error');
+});
+
+p1.then(res => {
+    console.log(res); // 打印success
+}, err => {
+    console.log(err); // 没有打印
+});
+```
+
+我们可以自己手写一个`Promise`来实现上面的效果。
+
+在`Promise`内部，是通过三种状态`pending`，`fulfilled`，`rejected`来决定执行时机的。
+
+我们首先定义一个`Promise`类，在构造函数中定义当前状态`state`，当前`result`值`value`，当前`error`值`reason`。
+
+当我们`new Promise(executor)`时，会默认调用构造函数，并将参数`executor`传入。这里参数`executor`是一个带有两个参数的函数`(resolve, reject)=>{}`，我们在构造函数中调用`executor`这个函数。
+
+`executor`的两个参数也是函数，分别为`resolve`和`reject`。`resolve`中将`state`改为`fulfilled`状态，`reject`将`state`改为`rejected`状态。
+
+`Promise`的实例可以执行`then`方法，我们在`Promise`类中定义这个方法，它接受两个参数，也都为函数，为别为`onFulfilled`和`onRejected`，即`res=>{}`和`err=>{}`
+
+以下是实现代码：
+
+```js
+class Promise {
+  constructor(executor) {
+    this.state = 'pending';
+    this.value = undefined;
+    this.reason = undefined;
+    const resolve = (value) => {
+      if (this.state === 'pending') {
+        this.value = value;
+        this.state = 'fulfilled';
+      }
+    };
+    const reject = (reason) => {
+      if (this.state === 'pending') {
+        this.reason = reason;
+        this.state = 'rejected';
+      }
+    };
+    executor(resolve, reject);
+  }
+  then(onFulfilled, onRejected) {
+    if (this.state === 'fulfilled') {
+      onFulfilled(this.value);
+    }
+    if (this.state === 'rejected') {
+      onRejected(this.reason);
+    }
+  }
+}
+
+module.exports = Promise;
+```
+
+上面的代码看似可行，但一般来说，`executor`函数里面的代码是异步代码（以下用`setTimeout`来模拟发送异步请求）
+
+```js
+const p1 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('success');
+    // reject('error');
+  }, 0);
+});
+
+p1.then(res => {
+    console.log(res);
+}, err => {
+    console.log(err);
+});
+p1.then(res => {
+  console.log(res+' is easy');
+}, err => {
+  console.log(err+ 'is bad');
+});
+```
+
+根据`JS`的执行机制，同步代码执行至`setTimeout`，会将`setTimeout`放入宏任务的`task queue`，主线程代码执行完毕后，会执行微任务（在这里微任务就是`then`）。因此，在`resolve`方法调用前，`then`方法先执行了，此时`state`状态还是`pending`，因此`then`方法没有任何输出。
+
+为此，我们需要在`then`方法中，新增当`state`状态为`pending`时的处理。
+
+我们在构造函数中定义两个新的属性`onResolveCallbacks`和`onRejectedCallbacks`，他们是存储回调函数的数组。在执行`then`方法时，如果当前`state`为`pending`，则只将`onFulfilled(this.value)`和`onRejected(this.reason)`作为回调函数分别`push`进这两个数组。而后，在`resolve`和`reject`方法中，遍历对应的数组执行里面的回调。
+
+这是发布-订阅的设计模式
+
+你可能想问为什么`onResolveCallbacks`要是数组，不能用一个对象或方法吗？之所以要用数组是因为，我们不一定只在代码中执行一次`then`方法，可能是多次（如上面的示例代码）。
+
+实现如下：
+
+```js
+class Promise {
+  constructor(executor) {
+    this.state = 'pending';
+    this.value = undefined;
+    this.reason = undefined;
+    this.onResolvedCallbacks = [];
+    this.onRejectedCallbacks = [];
+    const resolve = (value) => {
+      if (this.state === 'pending') {
+        this.value = value;
+        this.onResolvedCallbacks.forEach(fn => fn());
+        this.state = 'fulfilled';
+      }
+    };
+    const reject = (reason) => {
+      if (this.state === 'pending') {
+        this.reason = reason;
+        this.onRejectedCallbacks.forEach(fn => fn());
+        this.state = 'rejected';
+      }
+    };
+    executor(resolve, reject);
+  }
+  then(onFulfilled, onRejected) {
+    if (this.state === 'fulfilled') {
+      onFulfilled(this.value);
+    }
+    if (this.state === 'rejected') {
+      onRejected(this.reason);
+    }
+    if (this.state === 'pending') {
+      this.onResolvedCallbacks.push(() => {
+        onFulfilled(this.value);
+      });
+      this.onRejectedCallbacks.push(() => {
+        onRejected(this.reason);
+      });
+    }
+  }
+}
+
+module.exports = Promise;
+```
+
+我们再来考虑一种情况：
+
+```js
+const p1 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('success');
+    // reject('error');
+  }, 0);
+});
+
+const p2 = p1.then(res => {
+    console.log(res); // success
+    return 'returnValue';
+}, err => {
+    console.log(err);
+});
+
+p2.then(res => {
+  console.log(res) // returnValue
+}, err => {
+  console.log(err)
+});
+```
+
+我们将`p1`的`then`返回值赋值给`p2`，`p2`也可以调用`then`方法，说明`then`方法返回的对象是一个`Promise`实例，为此我们需要对我们的代码进行进一步优化。
+
+考虑`onFulfilled`和`onRejected`方法，可能返回字符串，可能返回数组，甚至可能返回一个新的`Promise`实例，如：
+
+```js
+const p2 = p1.then(res => {
+    console.log(res); // success
+    return new Promise((resolve, reject) => {
+        resolve('success2');
+        reject('error2');
+    });
+}, err => {
+    console.log(err);
+});
+```
+
+因此，我们需要进行返回值的判断
+
+我们在外部定义一个方法resolvePromise，它接收4个参数：returnPromise，x（上述说的返回值），resolve，reject
+
+这里解释起来有些绕，上代码，解析看注释好了
+
+```js
+class Promise {
+  constructor(executor) {
+    this.state = 'pending';
+    this.value = undefined;
+    this.reason = undefined;
+    this.onResolvedCallbacks = [];
+    this.onRejectedCallbacks = [];
+    const resolve = (value) => {
+      if (this.state === 'pending') {
+        this.value = value;
+        this.onResolvedCallbacks.forEach(fn => fn());
+        this.state = 'fulfilled';
+      }
+    };
+    const reject = (reason) => {
+      if (this.state === 'pending') {
+        this.reason = reason;
+        this.onRejectedCallbacks.forEach(fn => fn());
+        this.state = 'rejected';
+      }
+    };
+    executor(resolve, reject);
+  }
+  then(onFulfilled, onRejected) {
+    const returnPromise = new Promise((resolve, reject) => {
+      if (this.state === 'fulfilled') {
+        // returnPromise在这里使用时尚未定义，因此需要用setTimeout包装，使它进入下一个事件循环
+        setTimeout(() => {
+          const x = onFulfilled(this.value);
+          resolvePromise(returnPromise, x, resolve, reject);
+        }, 0);
+      }
+      if (this.state === 'rejected') {
+        setTimeout(() => {
+          const x = onRejected(this.reason);
+          resolvePromise(returnPromise, x, resolve, reject);
+        }, 0);
+      }
+      if (this.state === 'pending') {
+        this.onResolvedCallbacks.push(() => {
+          setTimeout(() => {
+            const x = onFulfilled(this.value);
+            resolvePromise(returnPromise, x, resolve, reject);
+          }, 0);
+        });
+        this.onRejectedCallbacks.push(() => {
+          setTimeout(() => {
+            const x = onRejected(this.reason);
+            resolvePromise(returnPromise, x, resolve, reject);
+          }, 0);
+        });
+      }
+    });
+    return returnPromise;
+  }
+}
+
+const resolvePromise = (returnPromise, x, resolve, reject) => {
+  // 如果returnPromise 和 x相等，则是循环引用，报错
+  if (returnPromise === x) {
+    return reject(new TypeError('循环引用'));
+  }
+  // 判断x是基本数据类型还是Promise实例，如果是基本数据类型如string，number，则直接resolve出去就好了
+  if (typeof x === 'function' || (typeof x === 'object' && x !== null)) {
+    try {
+      const then = x.then;
+      if (typeof then === 'function') { // 此时我们就认为x是一个Promise实例
+        // 之所以用call，是保证this为x本身，不会被上下文的this所取代
+        then.call(x, res => {
+          // 不考虑递归解析的话就resolve结果即可
+          // resolve(res);
+          // 考虑递归解析
+          resolvePromise(returnPromise, x, resolve, reject);
+        }, err => {
+          reject(err);
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  } else {
+    // 返回不是Promise实例，直接resolve出去
+    resolve(x);
+  }
+}
+module.exports = Promise;
+```
+
+
+
+
+
 
 
 # DOM
@@ -3490,7 +3725,6 @@ node.removeChild(child)：删除一个子节点，返回删除的节点
 - 返回结果中包含元素节点、文本节点（如空格和换行）等
   
 - 若想只获得元素节点，可通过for循环+nodeType判断获得
-  
 2. **node.children**（非标准）
   
    - 我们往往只想获取子元素节点，不需要你把换行这种文本节点都获取过来
