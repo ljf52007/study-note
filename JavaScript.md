@@ -30,12 +30,580 @@
 
 
 
-## 1 基本概念
+## 1 正则表达式
 
-### 1.1语法
+**正则表达式（ Regular Expression ）**是用于匹配字符串中字符组合的模式。
 
-- 区分大小写
-- 
+- 在 JavaScript中，正则表达式也是对象。
+- 正则表达式通常被用来检索、替换那些符合某个模式（规则）的文本，例如验证表单：用户名表单只能输入英文字母、数字或者下划线， 昵称输入框中可以输入中文(匹配)。此外，正则表达式还常用于过滤掉页面内容中的一些敏感词(**替换**)，或从字符串中获取我们想要的特定部分(**提取**)等 。
+- 一个正则表达式可以由简单的字符构成，比如 /abc/，也可以是简单字符和特殊字符的组合，比如 /ab*c/ 。其中特殊字符也被称为**元字符**，在正则表达式中是具有特殊意义的专用符号，如 ^ 、$ 、+ 等。
+- 正则表达式里面不需要加引号 不管是数字型还是字符串型
+- 正则表达式学习网址： https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions
+- 正则表达式测试网址：http://tool.oschina.net/regex
+
+### 1. 1 使用场景
+
+1. `RegExp`的`exec`和`test`方法
+
+   - exec
+
+     - 语法：
+
+       ```js
+       // reg:RegExp实例
+       // str:要匹配正则表达式的字符串
+       reg.exec(str)
+       ```
+
+     - 返回值:
+
+       如果匹配成功，`exec()` 方法返回一个数组,包含额外的属性`index`和`input`，并更新正则表达式对象的 `lastIndex`属性。完全匹配成功的文本将作为返回数组的第一项，从第二项起，后续每项都对应正则表达式内捕获括号里匹配成功的文本。
+
+       如果匹配失败,`exec()`方法返回`null`,并将`lastIndex`重置为0
+
+     - 例子
+
+       ```js
+       var re = /quick\s(brown).+?(jumps)/ig;
+       var result = re.exec('The Quick Brown Fox Jumps Over The Lazy Dog.');
+       ```
+
+       结果如下表:
+
+         <table>
+           <thead>
+               <tr>
+                 <th>对象</th>
+                 <th>属性/索引</th>
+                 <th>描述</th>
+                 <th>例子</th>
+               </tr>
+           </thead>
+           <tbody>
+               <tr>
+                   <td rowspan="4">result</td>
+                   <td>[0]</td>
+                   <td>匹配的全部字符串</td>
+                   <td>Quick Brown Fox Jumps</td>
+               </tr>
+               <tr>
+                   <td>[1],...[n]</td>
+                   <td>括号中的分组捕获</td>
+                   <td>result[1] = Brown result[2] = Jumps</td>
+               </tr>
+               <tr>
+                   <td>index</td>
+                   <td>匹配到的字符位于原始字符串的基于0的索引值</td>
+                   <td>4</td>
+               </tr>
+               <tr>
+                   <td>input</td>
+                   <td>原始字符串</td>
+                   <td>The Quick Brown Fox Jumps Over The Lazy Dog</td>
+               </tr>
+               <tr>
+                   <td rowspan="5">re</td>
+                   <td>lastIndex</td>
+                   <td>下一次匹配开始的位置</td>
+                   <td>25</td>
+               </tr>
+               <tr>
+                   <td>ignoreCase</td>
+                   <td>是否使用了 "i" 标记使正则匹配忽略大小写</td>
+                   <td>true</td>
+               </tr>
+               <tr>
+                   <td>global</td>
+                   <td>是否使用了 "g" 标记来进行全局的匹配</td>
+                   <td>true</td>
+               </tr>
+               <tr>
+                   <td>multiline</td>
+                   <td>是否使用了 "m" 标记使正则工作在多行模式（也就是，^ 和 $ 可以匹配字符串中每一行的开始和结束（行是由 \n 或 \r 分割的），而不只是整个输入字符串的最开始和最末尾处。）</td>
+                   <td>false</td>
+               </tr>
+               <tr>
+                   <td>source</td>
+                   <td>正则匹配的字符串</td>
+                   <td>quick\s(brown).+?(jumps)</td>
+               </tr>
+           </tbody>
+         </table>
+       
+     
+   - test
+   
+     - 语法:
+   
+       ```js
+       // reg:RegExp实例
+       // str:要匹配正则表达式的字符串
+       reg.test(str)
+       ```
+   
+     - 返回值:
+   
+       `test()`用于检测字符串是否符合该规则,匹配成功返回`true`,否则返回`false`
+   
+     - 例子:
+   
+       ```js
+       var rg = /abc/;
+       console.log(rg.test('abc')); //true
+       console.log(rg.test('aabcd')); //true
+       console.log(rg.test('abcd')); //true
+       console.log(rg.test('abbc')); //false
+       ```
+   
+   
+   
+2. `String`的`match` `matchAll` `replace` `search` `split`方法
+
+   - `match`
+
+     - 语法:
+
+       ```js
+       str.match(reg)
+       ```
+
+     - 返回值:
+
+       - 如果使用g标志，则将返回与完整正则表达式匹配的所有结果，不会返回捕获组。
+
+       - 如果未使用g标志，则仅返回第一个完整匹配及其相关的捕获组（`Array`）。 在这种情况下，返回的项目将具有如下所述的其他属性:
+
+         - `groups`: 一个捕获组数组 或`undefined`（如果没有定义命名捕获组）。
+         - `index`: 匹配的结果的开始位置
+         - `input`: 搜索的字符串.
+
+         事实上,如果正则表达式不包含`g`,`str.match(reg)`将返回与`reg.exec(str)`相同的结果.
+
+     - 例子:
+
+       ```js
+       var str = 'For more information, see Chapter 3.4.5.1';
+       var re = /see (chapter \d+(\.\d)*)/i;
+       var found = str.match(re);
+       
+       console.log(found);
+       
+       // logs [ 'see Chapter 3.4.5.1',
+       //        'Chapter 3.4.5.1',
+       //        '.1',
+       //        index: 22,
+       //        input: 'For more information, see Chapter 3.4.5.1' ]
+       
+       // 'see Chapter 3.4.5.1' 是整个匹配。
+       // 'Chapter 3.4.5.1' 被'(chapter \d+(\.\d)*)'捕获。
+       // '.1' 是被'(\.\d)'捕获的最后一个值。
+       // 'index' 属性(22) 是整个匹配从零开始的索引。
+       // 'input' 属性是被解析的原始字符串。
+       ```
+
+       
+
+   - `matchAll`
+
+     - 语法:
+
+       ```js
+       // reg:正则表达式对象,且必须是设置了全局`g`的形式,否则会抛出异常`TypeError`
+       str.matchAll(reg)
+       ```
+
+     - 返回值:
+
+       返回一个迭代器,可用`for`或`Array.from`来遍历
+
+     - 说明:
+
+       1. 对比`reg.exec()`和`str.matchAll()`:
+
+          在 `matchAll` 出现之前，通过在循环中调用 `reg.exec()` 来获取所有匹配项信息（`reg` 需使用 `/g` 标志）：
+
+          ```js
+          const reg = RegExp('foo[a-z]*','g');
+          const str = 'table football, foosball';
+          let match;
+          while ((match = reg.exec(str)) !== null) {
+              console.log(`Find: ${match[0]} start: ${match.index} end: ${reg.lastIndex}`);
+              // Find: football start: 6 end: 14
+              // test.html:93 Find: foosball start: 16 end: 24
+          }
+          ```
+
+          如果使用 `matchAll` ，就可以不必使用 while 循环加 exec 方式（且正则表达式需使用 `/g` 标志）。使用 `matchAll` 会得到一个迭代器的返回值，配合 `for...of`, `array spread`, 或者 `Array.from()` 可以更方便实现功能：
+
+          ```js
+          const reg = RegExp('foo[a-z]*','g');
+          const str = 'table football, foosball';
+          const match = str.matchAll(reg);
+          for (const item of match) {
+          	console.log(`Find ${item[0]} start: ${item.index} end: ${item.index + item[0].length}`);
+          	// Find: football start: 6 end: 14
+              // test.html:93 Find: foosball start: 16 end: 24
+          }
+          const arr = Array.from(str.matchAll(reg), m => m[0]);
+          console.log(arr); // ["football", "foosball"]
+          ```
+
+       2. `matchAll`内部做了一个`reg`的复制,所以不像`reg.exec`,`lastIndex`在字符串扫描时不会改变
+
+          ```js
+          const regexp = RegExp('[a-c]','g');
+          regexp.lastIndex = 1;
+          const str = 'abc';
+          Array.from(str.matchAll(regexp), m => `${regexp.lastIndex} ${m[0]}`);
+          // Array [ "1 b", "1 c" ]
+          ```
+
+       3. `matchAll` 的另外一个亮点是更好地获取捕获组。因为当使用 `match()` 和 `/g` 标志方式获取匹配信息时，捕获组会被忽略：
+
+          ```js
+          var regexp = /t(e)(st(\d?))/g;
+          var str = 'test1test2';
+          
+          str.match(regexp);
+          // Array ['test1', 'test2']
+          ```
+
+          使用 `matchAll` 可以通过如下方式获取分组捕获:
+
+          ```js
+          let array = [...str.matchAll(regexp)];
+          
+          array[0];
+          // ['test1', 'e', 'st1', '1', index: 0, input: 'test1test2', length: 4]
+          array[1];
+          // ['test2', 'e', 'st2', '2', index: 5, input: 'test1test2', length: 4]
+          ```
+
+   
+
+   - `replace`
+
+     - 语法:
+
+       ```js
+       // reg:一个RegExp对象或者其字面量.该正则所匹配的内容会被第二个参数的返回值替换
+       // substr:一个将被newSubstr替换的字符串.仅第一个匹配项会被替换.
+       // newSubstr:用于替换掉第一个参数在原字符串中的匹配部分的字符串。该字符串中可以内插一些特殊的变量名。
+       // replaceFunction:一个用来创建新子字符串的函数，该函数的返回值将替换掉第一个参数匹配到的结果
+       str.replace(reg|substr, newSubstr|replaceFunction)
+       ```
+
+     - 返回值:
+
+       该方法并不改变调用它的字符串本身，而只是返回一个新的替换后的字符串。
+
+     - 第二个参数说明:
+
+       - `newSubstr`可插入下面的特殊变量名: 
+
+         | 变量名    | 代表的值                                                     |
+         | --------- | ------------------------------------------------------------ |
+         | `$$`      | 插入一个`"$"`                                                |
+         | `$&`      | 插入匹配的子串                                               |
+         | $`        | 插入当前匹配的子串左边的内容                                 |
+         | `$'`      | 插入当前匹配的子串右边的内容                                 |
+         | `$n`      | 当第一个参数是`RegExp`对象且包含捕获组,`$n`对应第`n`个捕获组匹配的子串 |
+         | `$<name>` | 这里*`Name`* 是一个分组名称。如果在正则表达式中并不存在分组（或者没有匹配），这个变量将被处理为空字符串。 |
+
+       - `replaceFunction`
+
+         第二个参数可以指定为一个函数,函数的返回值作为替换的字符串.注意,每执行一次匹配,该函数就会执行一次(所以当第一个参数是正则表达式,并且设置了全局匹配`g`,那么`replaceFunction`会被多次调用,每次匹配都用被调用),如下,第一个`aa`被替换为0,第二个`aa`被替换为1
+
+         ```js
+         const str = 'aabbaaccdd';
+         const reg = /aa/g;
+         let i = 0;
+         function fn (match) {
+         	return i++;
+         }
+         console.log(str.replace(reg, fn)); // 0bb1ccdd
+         ```
+
+         以下是该函数的参数:
+
+         | 变量名              | 代表的值                                                     |
+         | ------------------- | ------------------------------------------------------------ |
+         | `match`             | 匹配的子串(对应于上述的`$&`)                                 |
+         | `p1,p2,...`         | 对应上述的`&1,&2,...`                                        |
+         | `offset`            | 匹配到的子字符串在原字符串中的偏移量.(比如,如果原字符串是`abcd`,匹配到的子字符串是`bc`,那么偏移量就是1) |
+         | `string`            | 被匹配的原字符串                                             |
+         | `NamedCaptureGroup` | 命名捕获组匹配的对象                                         |
+
+     - 例子:
+
+       1. 下面的例子将会使 `newString` 变成 `'abc - 12345 - #$*%'`：
+
+          ```js
+          function replacer(match, p1, p2, p3, offset, string) {
+            // p1 is nondigits, p2 digits, and p3 non-alphanumerics
+            return [p1, p2, p3].join(' - ');
+          }
+          var newString = 'abc12345#$*%'.replace(/([^\d]*)(\d*)([^\w]*)/, replacer);
+          console.log(newString);  // abc - 12345 - #$*%
+          ```
+
+       2. 交换字符串中的两个单词:
+
+          ```js
+          var re = /(\w+)\s(\w+)/;
+          var str = "John Smith";
+          var newstr = str.replace(re, "$2, $1");
+          // Smith, John
+          console.log(newstr);
+          ```
+
+       3. 使用行内函数来修改匹配到的字符:
+
+          ```js
+          function upperToHyphenLower(match){
+          	return '-' + match.toLowerCase();
+          }
+          console.log('borderTop'.replace(/[A-Z]/g, upperToHyphenLower)); // border-top
+          ```
+
+          因为我们想在最终的替换中进一步转变匹配结果(比如这里使用`toLowerCase`方法进行转换),所以我们必须使用一个函数.如果我们不使用一个函数进行匹配,那么`toLowerCase()`方法不会起效.如:
+
+          ```js
+          var newString = propertyName.replace(/[A-Z]/g, '-' + '$&'.toLowerCase());  // won't work
+          ```
+
+          这是因为 `'$&'.toLowerCase()` 会先被解析成字符串字面量（这会导致相同的'$&')而不是当作一个模式
+
+          
+
+   - `search`
+
+     - 语法:
+
+       ```js
+       str.search(reg)
+       ```
+
+     - 返回值:
+
+       如果匹配成功，则 `search()` 返回正则表达式在字符串中首次匹配项的索引;否则，返回 `-1`。
+
+       事实上,`search`相对于`match`,就像`test`相对于`exec`.当仅仅想知道字符串中是否存在某个`pattern`时,可使用`search`和`test`,而当想获取更多的匹配信息时,可使用`match`和`exec`(会更慢一些).
+
+     - 例子:
+
+       ```js
+       var str = "hey JudE";
+       var re = /[A-Z]/g;
+       var re2 = /[.]/g;
+       console.log(str.search(re)); // 4
+       console.log(str.search(re2)); // -1
+       ```
+
+       
+
+   - `split`
+
+     - 语法:
+
+       ```js
+       // separator:分隔符
+       // limit:限制返回数组的项数最大值
+       str.split([separator[, limit]]);
+       ```
+
+     - 返回值:
+
+       1. `separator`为字符串,返回`str`以`separator`作为分隔符切割的子字符串的数组;
+       2. `separator`为正则表达式,返回`str`匹配`separator`作为分隔符切割的子字符串的数组;如果分隔符是包含捕获括号的正则表达式，则每次分隔符匹配时，捕获括号的结果（包括任何未定义的结果）将被拼接到输出数组中。
+       3. 如果`str`没有找到`separator`或者省略了`separator`.则返回包含`str`的数组;
+
+     - 例子:
+
+       ```js
+       const str = 'aabbccbbddee';
+       console.log(str.split()); // ['aabbccbbddee']
+       console.log(str.split('')); // ["a", "a", "b", "b", "c", "c", "b", "b", "d", "d", "e", "e"]
+       console.log(str.split('', 4)); // ["a", "a", "b", "b"]
+       console.log(str.split(/b+/)); // ["aa", "cc", "ddee"]
+       console.log(str.split(/(b+)/)); // ["aa", "bb", "cc", "bb", "ddee"]
+       console.log('ca,bc,a,bca,bca,bc'.split(['a','b'])); // ["c", "c,", "c", "c", "c"]
+       ```
+
+
+
+### 1.2 创建正则表达式
+
+1. 通过 RegExp 对象的构造函数创建：
+
+   在脚本运行过程中，用构造函数创建的正则表达式会被编译。如果正则表达式将会改变，或者它将会从用户输入等来源中动态地产生，就需要使用构造函数来创建正则表达式。
+
+   ```
+   var 变量名 = new RegExp(/表达式/);
+   ```
+
+2. 通过字面量创建
+
+   脚本加载后，正则表达式字面量就会被编译。当正则表达式保持不变时，使用此方法可获得更好的性能。
+
+   ```javascript
+   var 变量名 = /表达式/;
+   ```
+
+### 1.3 特殊字符
+
+#### 量词符
+
+| 字符  | 用法                                                         |
+| :---: | ------------------------------------------------------------ |
+|   *   | 匹配前一个表达式 0 次或多次.等价于 `{0,}`<br />例如，`/bo*/` 会匹配` "A ghost boooooed" `中的 `'booooo' `和 `"A bird warbled"` 中的 `'b'`，但是在 `"A goat grunted"` 中不会匹配任何内容 |
+|   +   | 匹配前面一个表达式 1 次或者多次.等价于 `{1,}`<br />例如，`/a+/` 会匹配 `"candy"` 中的` 'a'` 和 `"caaaaaaandy"` 中所有的` 'a'`，但是在 `"cndy" `中不会匹配任何内容 |
+|   ?   | 1. 匹配前面一个表达式 0 次或者 1 次.等价于 `{0,1}`<br />例如，`/e?le?/` 匹配 `"angel"` 中的 `'el'`、`"angle" `中的` 'le'` 以及` "also' `中的 `'l'`;<br />2. 如果紧跟在任何量词`*` `+` `?`或者`{}`的后面,会使量词变得非贪婪(匹配尽量少的字符),和缺省使用的贪婪模式(匹配尽可能多的字符)相反.<br />如,对`"123abc"`使用`/\d+/`会匹配`"123"`,而使用`/\d+?/`则只会匹配到`"`"`<br />3. 还用于先行断言 |
+|  {n}  | n 是一个正整数，匹配了前面一个字符刚好出现了 n 次。<br/>比如， /a{2}/ 不会匹配“candy”中的'a',但是会匹配“caandy”中所有的 a，以及“caaandy”中的前两个'a'。 |
+| {n,}  | n是一个正整数，匹配前一个字符至少出现了n次。<br />例如, /a{2,}/ 匹配 "aa", "aaaa" 和 "aaaaa" 但是不匹配 "a"。 |
+| {n,m} | n 和 m 都是整数。匹配前面的字符至少n次，最多m次。如果 n 或者 m 的值是0， 这个值被忽略。<br />例如，/a{1, 3}/ 并不匹配“cndy”中的任意字符，匹配“candy”中的a，匹配“caandy”中的前两个a，也匹配“caaaaaaandy”中的前三个a。注意，当匹配”caaaaaaandy“时，匹配的值是“aaa”，即使原始的字符串中有更多的a。 |
+
+
+
+#### 边界符
+
+| 字符 | 用法                                                         |
+| :--: | ------------------------------------------------------------ |
+|  ^   | 1. 匹配输入的开始,如果多行标志被设置为`true`，那么也匹配换行符后紧跟的位置.<br />如`/^A/` 并不会匹配`"an A"`中的`'A'`，但是会匹配 `"An E"`中的` 'A'`<br />2. 反向字符集合 |
+|  $   | 匹配输入的结束.如果多行标志被设置为 `true`，那么也匹配换行符前的位置。<br />例如，`/t$/` 并不会匹配 `"eater" `中的` 't'`，但是会匹配 `"eat"` 中的` 't'` |
+
+**如果 ^ 和 $ 在一起，表示必须是精确匹配**：
+
+```js
+var reg1 = /^abc$/; // 精确匹配 要求必须是 abc字符串才符合规范
+console.log(reg1.test('abc')); // true
+console.log(reg1.test('abcd')); // false
+console.log(reg1.test('aabcd')); // false
+console.log(reg1.test('abcabc')); // false
+```
+
+
+
+#### 括号
+
+1. 小括号-捕获括号:
+
+   | 字符  | 用法                                                         |
+   | :---: | ------------------------------------------------------------ |
+   |  (x)  | 像下面的例子展示的那样，它会匹配 `x`并且记住匹配项。其中括号被称为*捕获括号*。<br />模式 `/(foo) (bar) \1 \2/` 中的 '`(foo)`' 和 '`(bar)`' 匹配并记住字符串 "foo bar foo bar" 中前两个单词。模式中的 `\1` 和 `\2` 表示第一个和第二个被捕获括号匹配的子字符串，即 `foo` 和 `bar`，匹配了原字符串中的后两个单词。注意 `\1`、`\2`、...、`\n` 是用在正则表达式的匹配环节，详情可以参阅后文的 [\n](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions$edit#special-backreference) 条目。而在正则表达式的替换环节，则要使用像 `$1`、`$2`、...、`$n` 这样的语法，例如，`'bar foo'.replace(/(...) (...)/, '$2 $1')`。`$&` 表示整个用于匹配的原字符串。 |
+   | (?:x) | 匹配 'x' 但是不记住匹配项。这种括号叫作*非捕获括号*，使得你能够定义与正则表达式运算符一起使用的子表达式。<br />如 `/(?:foo){1,2}/`。如果表达式是 `/foo{1,2}/`，`{1,2}` 将只应用于 'foo' 的最后一个字符 'o'。如果使用非捕获括号，则 `{1,2}` 会应用于整个 'foo' 单词 |
+
+2. 中括号:
+
+   |  字符  | 用法                                                         |
+   | :----: | ------------------------------------------------------------ |
+   | [xyz]  | 一个字符集合。匹配方括号中的任意字符，包括[转义序列](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Grammar_and_types)。你可以使用破折号（-）来指定一个字符范围。对于点（.）和星号（*）这样的特殊符号在一个字符集中没有特殊的意义。他们不必进行转义，不过转义也是起作用的。<br/>例如，[abcd] 和[a-d]是一样的。他们都匹配"brisket"中的‘b’,也都匹配“city”中的‘c’。/[a-z.]+/ 和/[\w.]+/与字符串“test.i.ng”匹配。 |
+   | [^xyz] | 一个反向字符集。也就是说， 它匹配任何没有包含在方括号中的字符。你可以使用破折号（-）来指定一个字符范围。任何普通字符在这里都是起作用的。<br />例如，`[^abc]` 和 `[^a-c] `是一样的。他们匹配"brisket"中的‘r’，也匹配“chop”中的‘h’。 |
+
+3. 大括号:量词符
+
+
+
+#### 转义符
+
+| 字符 | 用法                                                         |
+| :--: | ------------------------------------------------------------ |
+|  \   | 1. 在非特殊字符前,表示下一个字符是特殊字符,如`\s`匹配空白字符,而不是匹配小写字母`s`;<br />2.在特殊字符前,表示下一个字符是普通字符,即转义,如`\*`匹配`*`字符;<br />3.在字符串字面量中,`\`是转义字符,所以如果要在这种模式下添加反斜杠,需要双重转义.<br />如`/[a-z]\s/i` 和 `new RegExp("[a-z]\\s", "i")` 创建了相同的正则表达式<br />再如`/[a-z]:\\/i` 和 `new RegExp("[a-z]:\\\\","i")` 会创建相同的表达式 |
+
+关于转义:
+
+1. 转义特殊字符为对应的字面值,如匹配`a*b`,使用`/a\*b/`;
+
+2. 转义斜杆`/`,如果正则表达式文字需要匹配斜杠`/`,需要进行转义,因为`/`在正则中是终止符.如匹配`C:/`,使用`/[A-Z]:\//`;
+
+3. 转义反斜杠`\`,如果正则表达式文字需要匹配反斜杠`\`,需要进行转义.如匹配`C:\`,使用`/[A-Z]:\\/`;
+
+4. 在`RegExp`构造函数中,在字符串中使用正则表达式,请记住反斜杠是字符串文字中的转义，因此要在正则表达式中使用它，需要在字符串文字级别转义它。 `/a\*b/` 和`new RegExp("a\\*b")`创建的表达式是相同的
+
+5. 将用户输入转义为正则表达式中的一个字面字符串:
+
+   ```js
+   function escapeRegExp(inputString) {
+       //$&表示整个被匹配的字符串
+       return inputString.replace(/[.*+?^&{}()|[\]\\]/g, "\\$&");
+   }
+   ```
+
+
+
+#### 断言
+
+|  字符   | 用法                                                         |
+| :-----: | ------------------------------------------------------------ |
+| x(?=y)  | 匹配'x'仅仅当'x'后面跟着'y'.这种叫做先行断言。<br />例如，/Jack(?=Sprat)/会匹配到'Jack'仅当它后面跟着'Sprat'。/Jack(?=Sprat\|Frost)/匹配‘Jack’仅当它后面跟着'Sprat'或者是‘Frost’。但是‘Sprat’和‘Frost’都不是匹配结果的一部分。 |
+| (?<=y)x | 匹配'x'仅当'x'前面是'y'.这种叫做后行断言。<br />例如，/(?<=Jack)Sprat/会匹配到' Sprat '仅仅当它前面是' Jack '。/(?<=Jack\|Tom)Sprat/匹配‘ Sprat ’仅仅当它前面是'Jack'或者是‘Tom’。但是‘Jack’和‘Tom’都不是匹配结果的一部分。 |
+| x(?!y)  | 仅仅当'x'后面不跟着'y'时匹配'x'，这被称为正向否定查找。<br />例如，仅仅当这个数字后面没有跟小数点的时候，/\d+(?!\.)/ 匹配一个数字。正则表达式/\d+(?!\.)/.exec("3.141")匹配‘141’而不是‘3.141’ |
+| (?<!y)x | 仅仅当'x'前面不是'y'时匹配'x'，这被称为反向否定查找。<br />例如, 仅仅当这个数字前面没有负号的时候，`/(?<!-)\d+/` 匹配一个数字。<br/>`/(?<!-)\d+/.exec('3')` 匹配到 "3".<br/>`/(?<!-)\d+/.exec('-3')` 因为这个数字前有负号，所以没有匹配到。 |
+
+
+
+#### 预定义类
+
+|         字符          | 用法                                                         |
+| :-------------------: | ------------------------------------------------------------ |
+|          \b           | 匹配一个词的边界.<br />如`/\blu/`匹配`lujiafeng`中的`lu`<br />`/lu\b/`匹配`lujiafeng`中的`lu` |
+|          \B           |                                                              |
+|          \d           | 匹配一个数字`。``等价于[0-9]`。                              |
+|          \D           | 匹配一个非数字字符`。``等价于[^0-9]`。                       |
+|          \f           | 匹配一个换页符 (U+000C)                                      |
+|          \n           | 匹配一个换行符 (U+000A)。                                    |
+|          \r           | 匹配一个回车符 (U+000D)。                                    |
+|          \s           | 匹配一个空白字符，包括空格、制表符、换页符和换行符。等价于`[ \f\n\r\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]`。<br />例如, `/\s\w*/` 匹配"foo bar."中的' bar'。 |
+|          \S           | 匹配一个非空白字符。等价于 `[^ `\f\n\r\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff`]`。<br />例如，`/\S\w*/` 匹配"foo bar."中的'foo'。 |
+|          \t           | 匹配一个水平制表符 (U+0009)。                                |
+|          \v           | 匹配一个垂直制表符 (U+000B)。                                |
+|          \w           | 匹配一个单字字符（字母、数字或者下划线）。等价于 `[A-Za-z0-9_]`。<br />例如, `/\w/` 匹配 "apple," 中的 'a'，"$5.28,"中的 '5' 和 "3D." 中的 '3'。 |
+|          \W           | 匹配一个非单字字符。等价于 `[^A-Za-z0-9_]`。<br />例如, `/\W/` 或者 `/[^A-Za-z0-9_]/` 匹配 "50%." 中的 '%'。 |
+| \n(这里的n指的是数字) | 在正则表达式中，它返回最后的第n个子捕获匹配的子字符串(捕获的数目以左括号计数)。<br />比如 `/apple(,)\sorange\1/` 匹配"apple, orange, cherry, peach."中的'apple, orange,' 。 |
+|          \0           | 匹配 NULL（U+0000）字符， 不要在这后面跟其它小数，因为 `\0<digits>` 是一个八进制转义序列。 |
+|         [\b]          | 匹配一个退格(U+0008)。（不要和\b混淆了。）                   |
+
+
+
+#### 其他
+
+| 字符  | 用法                                                         |
+| :---: | ------------------------------------------------------------ |
+|   .   | 1. （小数点）默认匹配除换行符之外的任何单个字符。<br />例如，`/.n/` 将会匹配 `"nay, an apple is on the tree"` 中的` 'an'` 和` 'on'`，但是不会匹配 `'nay'`。<br />2. 如果 ``s` ("dotAll") `标志位被设为 `true`，它也会匹配换行符。 |
+| `x|y` | 匹配‘x’或者‘y’。                                             |
+
+
+
+### 1.4 通过标志进行高级搜索
+
+正则表达式有六个可选参数 (`flags`) 允许全局和不分大小写搜索等。这些参数既可以单独使用也能以任意顺序一起使用, 并且被包含在正则表达式实例中。
+
+| 标志 | 描述                                                  |
+| ---- | ----------------------------------------------------- |
+| `g`  | 全局搜索                                              |
+| `i`  | 不区分大小写搜索                                      |
+| `m`  | 多行搜索                                              |
+| `s`  | 允许`.`匹配换行符                                     |
+| `u`  | 使用`unicode`码的模式进行匹配                         |
+| `y`  | 执行粘性`(sticky)`搜索,匹配从目标字符串的当前位置开始 |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 基本概念
 
 ## JavaScript变量提升
 
@@ -96,302 +664,6 @@
   ```
   
   
-
-
-
-## 正则表达式
-
-**正则表达式（ Regular Expression ）**是用于匹配字符串中字符组合的模式。
-
-- 在 JavaScript中，正则表达式也是对象。
-- 正则表达式通常被用来检索、替换那些符合某个模式（规则）的文本，例如验证表单：用户名表单只能输入英文字母、数字或者下划线， 昵称输入框中可以输入中文(匹配)。此外，正则表达式还常用于过滤掉页面内容中的一些敏感词(**替换**)，或从字符串中获取我们想要的特定部分(**提取**)等 。
-- 一个正则表达式可以由简单的字符构成，比如 /abc/，也可以是简单字符和特殊字符的组合，比如 /ab*c/ 。其中特殊字符也被称为**元字符**，在正则表达式中是具有特殊意义的专用符号，如 ^ 、$ 、+ 等。
-- 正则表达式里面不需要加引号 不管是数字型还是字符串型
-- 正则表达式学习网址： https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions
-- 正则表达式测试网址：http://tool.oschina.net/regex
-
-### 使用场景
-
-1. `RegExp`的`exec`和`test`方法
-2. `String`的`match` `matchAll` `replace` `search` `split`方法
-
-### 创建正则表达式
-
-1. 通过 RegExp 对象的构造函数创建：
-
-   在脚本运行过程中，用构造函数创建的正则表达式会被编译。如果正则表达式将会改变，或者它将会从用户输入等来源中动态地产生，就需要使用构造函数来创建正则表达式。
-
-   ```
-   var 变量名 = new RegExp(/表达式/);
-   ```
-
-2. 通过字面量创建
-
-   脚本加载后，正则表达式字面量就会被编译。当正则表达式保持不变时，使用此方法可获得更好的性能。
-
-   ```javascript
-   var 变量名 = /表达式/;
-   ```
-
-### 特殊字符
-
-| 字符    | 用法                                                         |
-| ------- | ------------------------------------------------------------ |
-| \       | 1. 在非特殊字符前,表示下一个字符是特殊字符,如`\s`匹配空白字符,而不是匹配小写字母`s`;<br />2.在特殊字符前,表示下一个字符是普通字符,即转义,如`\*`匹配`*`字符;<br />3.在字符串字面量中,`\`是转义字符,所以如果要在这种模式下添加反斜杠,需要双重转义.<br />如`/[a-z]\s/i` 和 `new RegExp("[a-z]\\s", "i")` 创建了相同的正则表达式<br />再如`/[a-z]:\\/i` 和 `new RegExp("[a-z]:\\\\","i")` 会创建相同的表达式 |
-| ^       | 1. 匹配输入的开始,如果多行标志被设置为`true`，那么也匹配换行符后紧跟的位置.如`/^A/` 并不会匹配`"an A"`中的`'A'`，但是会匹配 `"An E"`中的` 'A'`<br />2. 反向字符集合 |
-| $       | 匹配输入的结束.如果多行标志被设置为 `true`，那么也匹配换行符前的位置。<br />例如，`/t$/` 并不会匹配 `"eater" `中的` 't'`，但是会匹配 `"eat"` 中的` 't'` |
-| *       | 匹配前一个表达式 0 次或多次.等价于 `{0,}`<br />例如，`/bo*/` 会匹配` "A ghost boooooed" `中的 `'booooo' `和 `"A bird warbled"` 中的 `'b'`，但是在 `"A goat grunted"` 中不会匹配任何内容 |
-| +       | 匹配前面一个表达式 1 次或者多次.等价于 `{1,}`<br />例如，`/a+/` 会匹配 `"candy"` 中的` 'a'` 和 `"caaaaaaandy"` 中所有的` 'a'`，但是在 `"cndy" `中不会匹配任何内容 |
-| ?       | 1. 匹配前面一个表达式 0 次或者 1 次.等价于 `{0,1}`<br />例如，`/e?le?/` 匹配 `"angel"` 中的 `'el'`、`"angle" `中的` 'le'` 以及` "also' `中的 `'l'`;<br />2. 如果紧跟在任何量词`*` `+` `?`或者`{}`的后面,会使量词变得非贪婪(匹配尽量少的字符),和缺省使用的贪婪模式(匹配尽可能多的字符)相反.<br />如,对`"123abc"`使用`/\d+/`会匹配`"123"`,而使用`/\d+?/`则只会匹配到`"`"`<br />3. 还用于先行断言 |
-| .       | 1. （小数点）默认匹配除换行符之外的任何单个字符。<br />例如，`/.n/` 将会匹配 `"nay, an apple is on the tree"` 中的` 'an'` 和` 'on'`，但是不会匹配 `'nay'`。<br />2. 如果 ``s` ("dotAll") `标志位被设为 `true`，它也会匹配换行符。 |
-| (x)     | 像下面的例子展示的那样，它会匹配 `x`并且记住匹配项。其中括号被称为*捕获括号*。<br />模式 `/(foo) (bar) \1 \2/` 中的 '`(foo)`' 和 '`(bar)`' 匹配并记住字符串 "foo bar foo bar" 中前两个单词。模式中的 `\1` 和 `\2` 表示第一个和第二个被捕获括号匹配的子字符串，即 `foo` 和 `bar`，匹配了原字符串中的后两个单词。注意 `\1`、`\2`、...、`\n` 是用在正则表达式的匹配环节，详情可以参阅后文的 [\n](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions$edit#special-backreference) 条目。而在正则表达式的替换环节，则要使用像 `$1`、`$2`、...、`$n` 这样的语法，例如，`'bar foo'.replace(/(...) (...)/, '$2 $1')`。`$&` 表示整个用于匹配的原字符串。 |
-| (?:x)   | 匹配 'x' 但是不记住匹配项。这种括号叫作*非捕获括号*，使得你能够定义与正则表达式运算符一起使用的子表达式。<br />如 `/(?:foo){1,2}/`。如果表达式是 `/foo{1,2}/`，`{1,2}` 将只应用于 'foo' 的最后一个字符 'o'。如果使用非捕获括号，则 `{1,2}` 会应用于整个 'foo' 单词 |
-| x(?=y)  | 匹配'x'仅仅当'x'后面跟着'y'.这种叫做先行断言。<br />例如，/Jack(?=Sprat)/会匹配到'Jack'仅当它后面跟着'Sprat'。/Jack(?=Sprat\|Frost)/匹配‘Jack’仅当它后面跟着'Sprat'或者是‘Frost’。但是‘Sprat’和‘Frost’都不是匹配结果的一部分。 |
-| (?<=y)x | 匹配'x'仅当'x'前面是'y'.这种叫做后行断言。<br />例如，/(?<=Jack)Sprat/会匹配到' Sprat '仅仅当它前面是' Jack '。/(?<=Jack\|Tom)Sprat/匹配‘ Sprat ’仅仅当它前面是'Jack'或者是‘Tom’。但是‘Jack’和‘Tom’都不是匹配结果的一部分。 |
-| x(?!y)  | 仅仅当'x'后面不跟着'y'时匹配'x'，这被称为正向否定查找。<br />例如，仅仅当这个数字后面没有跟小数点的时候，/\d+(?!\.)/ 匹配一个数字。正则表达式/\d+(?!\.)/.exec("3.141")匹配‘141’而不是‘3.141’ |
-| (?<!y)x | 仅仅当'x'前面不是'y'时匹配'x'，这被称为反向否定查找。<br />例如, 仅仅当这个数字前面没有负号的时候，`/(?<!-)\d+/` 匹配一个数字。<br/>`/(?<!-)\d+/.exec('3')` 匹配到 "3".<br/>`/(?<!-)\d+/.exec('-3')` 因为这个数字前有负号，所以没有匹配到。 |
-| x\|y    | 匹配‘x’或者‘y’。                                             |
-| {n}     | n 是一个正整数，匹配了前面一个字符刚好出现了 n 次。<br/>比如， /a{2}/ 不会匹配“candy”中的'a',但是会匹配“caandy”中所有的 a，以及“caaandy”中的前两个'a'。 |
-| {n,}    | n是一个正整数，匹配前一个字符至少出现了n次。<br />例如, /a{2,}/ 匹配 "aa", "aaaa" 和 "aaaaa" 但是不匹配 "a"。 |
-| {n,m}   | n 和 m 都是整数。匹配前面的字符至少n次，最多m次。如果 n 或者 m 的值是0， 这个值被忽略。<br />例如，/a{1, 3}/ 并不匹配“cndy”中的任意字符，匹配“candy”中的a，匹配“caandy”中的前两个a，也匹配“caaaaaaandy”中的前三个a。注意，当匹配”caaaaaaandy“时，匹配的值是“aaa”，即使原始的字符串中有更多的a。 |
-| [xyz]   | 一个字符集合。匹配方括号中的任意字符，包括[转义序列](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Grammar_and_types)。你可以使用破折号（-）来指定一个字符范围。对于点（.）和星号（*）这样的特殊符号在一个字符集中没有特殊的意义。他们不必进行转义，不过转义也是起作用的。<br/>例如，[abcd] 和[a-d]是一样的。他们都匹配"brisket"中的‘b’,也都匹配“city”中的‘c’。/[a-z.]+/ 和/[\w.]+/与字符串“test.i.ng”匹配。 |
-| [^xyz]  | 一个反向字符集。也就是说， 它匹配任何没有包含在方括号中的字符。你可以使用破折号（-）来指定一个字符范围。任何普通字符在这里都是起作用的。<br />例如，`[^abc]` 和 `[^a-c] `是一样的。他们匹配"brisket"中的‘r’，也匹配“chop”中的‘h’。 |
-| [\b]    | 匹配一个退格(U+0008)。（不要和\b混淆了。）                   |
-| \b      | 匹配一个词的边界.<br />如`/\blu/`匹配`lujiafeng`中的`lu`<br />`/lu\b/`匹配`lujiafeng`中的`lu` |
-| \B      |                                                              |
-| \d      | 匹配一个数字`。``等价于[0-9]`。                              |
-| \D      | 匹配一个非数字字符`。``等价于[^0-9]`。                       |
-| \f      | 匹配一个换页符 (U+000C)                                      |
-| \n      | 匹配一个换行符 (U+000A)。                                    |
-| \r      | 匹配一个回车符 (U+000D)。                                    |
-|         |                                                              |
-|         |                                                              |
-
-
-
-### test 测试正则表达式
-
-test() 正则对象方法，用于检测字符串是否符合该规则，该对象会返回 true 或 false，其参数是测试字符串。
-
-- 语法：
-
-```javascript
-regexpObj.test(str);
-```
-
-- 说明：
-
-  1. regexpObj 是我们写的正则表达式
-
-  2. str 我们要测试的文本
-
-  3. 上面的代码作用就是检测str文本是否符合我们写的正则表达式规范.
-
- **/abc/ ：只要包含abc字符串则true**
-
-```javascript
-var rg = /abc/;
-console.log(rg.test('abc')); //true
-console.log(rg.test('aabcd')); //true
-console.log(rg.test('abcd')); //true
-console.log(rg.test('abbc')); //false
-```
-
-
-
-### 正则表达式中的特殊字符
-
-#### 边界符
-
-正则表达式中的边界符（位置符）用来提示字符所处的位置，主要有两个字符：
-
-| 边界符 | 说明                           |
-| ------ | ------------------------------ |
-| ^      | 表示匹配行首的文本（以谁开始） |
-| $      | 表示匹配行尾的文本（以谁结束） |
-
-```javascript
-var rg = /^abc/; //abc开头true
-console.log(rg.test('abc')); //true
-console.log(rg.test('aabcd')); //false
-console.log(rg.test('abcd')); //true
-```
-
-**如果 ^ 和 $ 在一起，表示必须是精确匹配**：
-
-```javascript
-var reg1 = /^abc$/; // 精确匹配 要求必须是 abc字符串才符合规范
-console.log(reg1.test('abc')); // true
-console.log(reg1.test('abcd')); // false
-console.log(reg1.test('aabcd')); // false
-console.log(reg1.test('abcabc')); // false
-```
-
-
-
-#### 字符类
-
-1. **[]** 方括号：字符类表示有一系列字符**可供选择**，只要匹配其中**一个**就可以了。所有可供选择的字符都放在**方括号[]**内。
-
-   ```javascript
-   /[abc]/.test('andy')     // true 
-   ```
-
-   后面的字符串只要包含 abc 中任意一个字符，都返回 true 。
-
-2. **[-]**  方括号内部 **范围符 -** 
-
-   ```javascript
-      /^[a-z]$/.test('c');     // true
-   ```
-
-   方括号内部加上 - 表示范围，这里表示 a 到 z 26个英文字母都可以，A-Z 表示 A 到 Z 26个大写英文字母都可以，0-9 表示 0 到 9 的数字都可以。
-
-3. **[^]** 方括号内部 **取反符 ^**   
-
-   ```javascript
-      /[^abc]/.test('andy')     // false
-   ```
-
-   方括号内部加上 ^ 表示取反，只要包含方括号内的字符，都返回 false。
-
-4. 字符组合
-
-   ```javascript
-   /[a-z1-9]/.test('andy')     // true
-   ```
-
-   方括号内部可以使用**字符组合**，这里表示包含 a 到 z 的26个英文字母和 1 到 9 的数字都可以。
-
-
-
-#### 量词符
-
-量词符用来**设定某个模式出现的次数。**
-
-| 量词  | 说明                    |
-| ----- | ----------------------- |
-| *     | 重复零次或更多次        |
-| +     | 重复一次或更多次（>=1） |
-| ?     | 重复一次或零次          |
-| {n}   | 重复n次                 |
-| {n,}  | 重复n次或更多次（>=n）  |
-| {n,m} | 重复n到m次              |
-
-
-
-#### 用户名验证案例
-
-- 功能需求:
-
-1. 如果用户名输入合法, 则后面提示信息为 :  用户名合法,并且颜色为绿色
-
-2. 如果用户名输入不合法, 则后面提示信息为:  用户名不符合规范, 并且颜色为绿色
-
-- 代码：
-
-  ```html
-  <!DOCTYPE html>
-  <html>
-  	<head>
-  		<meta charset="utf-8">
-  		<title></title>
-  		<style>
-  			.tips{
-  				color: #ccc;
-  			}
-  			.right{
-  				color: green;
-  			}
-  			.wrong{
-  				color: red;
-  			}
-  		</style>
-  	</head>
-  	<body>
-  		<input type="text" class="biaodan"><span class="tips">请输入用户名</span>
-  		<script>
-  			var biaodan = document.querySelector(".biaodan");
-  			var tips = document.querySelector(".tips");
-  			var reg = /^[a-zA-Z0-9_-]{6,16}$/;
-  			biaodan.onblur = function(){
-  				if(reg.test(this.value)){
-  					tips.className = "right";
-  					tips.innerHTML = '用户名格式正确';
-  				}else{
-  					tips.className = "wrong";
-  					tips.innerHTML = '用户名格式不正确';
-  				}
-  			}
-  		</script>
-  	</body>
-  </html>
-  ```
-
-  
-
-#### 括号总结
-
-1. 中括号[]
-
-   表示字符集合，匹配括号中的任意字符
-
-   ```javascript
-   var reg = /^[abc]$/; //  表示 a||b||c
-   ```
-
-2. 大括号{}
-
-   量词符，表示重复次数
-
-   ```javascript
-   var reg = /^abc{3}$/;
-   ```
-
-   注意上面代码中是让c重复三次，而不是abc重复三次。
-
-3. 小括号()
-
-   表示优先级
-
-   ```javascript
-   var reg = /^(abc){3}$/; // 它是让abc重复三次
-   ```
-
-
-
-### 预定义类
-
-| 预定义类 | 说明                                                       |
-| -------- | ---------------------------------------------------------- |
-| \d       | 匹配0-9之间的任一数字，相当于[0-9]                         |
-| \D       | 匹配所有0-9以外的字符，相当[ ^0-9]                         |
-| \w       | 匹配任意的字母、数字和下划线，相当于[A-Za-z0-9_]           |
-| \W       | 除所有字母、数字和下划线以外的字符，相当于[ ^A-Za-z0-9_]   |
-| \s       | 匹配空格（包括换行符、制表符、空格等），相当于[\t\r\n\v\f] |
-| \S       | 匹配非空格的字符，相当于[ ^\t\r\n\v\f]                     |
-
-几种常见的验证正则表达式：
-
-1. 
-
-```
-1. 手机号码:     /^1[3|4|5|7|8][0-9]{9}$/
-2. QQ: /[1-9][0-9]{4,}/ (腾讯QQ号从10000开始)
-3. 昵称是中文:     /^[\u4e00-\u9fa5]{2,8}$/
-```
-
-
-
-2. 
-
-```javascript
-// 座机号码验证:  全国座机号码  两种格式:   010-12345678  或者  0530-1234567
-// 正则里面的或者 符号  |  
-var reg = /^\d{3}-\d{8}|\d{4}-\d{7}$/;
-```
-
-
 
 
 
