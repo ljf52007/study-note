@@ -301,7 +301,7 @@ text-decoration
 
 ## 4.1 行内元素、块级元素、行内块元素
 
-在说明几种居中方法之前，我先明确一下行内元素（inline）、块级元素（block）、行内块元素（inline-block）的区别和联系。
+首先明确行内元素（inline）、块级元素（block）、行内块元素（inline-block）的区别和联系。
 
 |          | 行内元素                                                     | 块级元素                                                     | 行内块元素                           |
 | -------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------ |
@@ -317,6 +317,37 @@ text-decoration
 | display: block;        | 设置为块级元素   |
 | display: inline;       | 设置为行内元素   |
 | display: inline-block; | 设置为行内块元素 |
+
+
+
+水平居中
+
+1. 行内元素:
+
+   ```css
+   text-align: center;
+   ```
+
+   有时候` text-align: center` 也会和 `display: inline-block` 配合使用，实现行内多个块级元素的水平居中:
+
+   ```css
+   div{
+       text-align: center;
+   }
+    
+   #div1{
+       display: inline-block;
+   }
+   #div2{
+       display: inline-block;
+   }
+   ```
+
+2. 块级元素-定宽
+
+   
+
+3. 块级元素-不定宽
 
 
 
@@ -751,25 +782,29 @@ inset 表示内阴影。一般配合设置两个阴影，以达到四个方向�
 
 # 8 盒模型
 
-CSS的盒子结构如下图：
+`CSS`的盒子结构如下图：`content`+`padding`+`border`+`margin`.
 
 ![CSS盒结构](./images/HTML5+CSS3/CSS盒结构.png)
 
-我将这样的盒子结构理解为，一个盒子，外边距 margin 不算的话，它包含了 border、padding、content 三个部分。然而，我们在CSS中设置宽高 width 和 height 时，默认情况下盒子的宽高指的是内容的宽高，这就是默认的content-box，
+盒模型是页面渲染时,`dom`元素所采用的布局模型.可通过`box-sizing`进行设置.
 
-content-box往往会造成，当我要给一个盒子添加 border 或 padding 的时候，页面结构就可能会错位。这是由于父盒子的宽度已经不够支撑四个子盒子的宽度总和了。这时候我们可能会将父盒子的宽度调大一点，但是这样子去调试往往不是我们想要看到的。
+我们在`CSS`中设置 宽高`width`和`height`,默认情况下,盒子的宽高指的是`content`的宽高,即`box-sizing`默认值为`content-box`.`content-box`往往会造成，当我给一个盒子添加 border 或 padding 的时候，页面结构产生错位。这是由于父盒子的宽度已经不够支撑四个子盒子的宽度总和了。这时候我们可能会将父盒子的宽度调大一点，但是这样子去调试往往是不符合需求的。
 
-我们可以通过 **box-sizing** 设置盒模型来解决这个问题：
+我们可以通过`box-sizing`设置盒模型来解决这个问题,`box-sizing`有以下两种属性值:
 
-## box-sizing: content-box：标准盒模型
+1. `box-sizing: content-box`:标准盒模型
 
-即默认情况下的盒模型，设置盒子的 width 和 height 仅仅是内容的宽高。
+   即默认情况下的盒模型,设置盒子的`width`和`height`仅仅是`content`的宽高.
 
-## box-sizing: border-box：IE（怪异）盒模型
+   总宽度 = `margin + border + padding + width`.
 
-设置的width属性值就是盒子的最终的宽度，包含了border和padding和内容。如果添加了 padding 和 border,那么真正放置内容的区域会减小-，但是它可以稳固页面的结构。
+2. `box-sizing: border-box`:怪异盒模型(或IE盒模型)
 
+   设置的`width`属性值就是盒子的最终宽度,包含`padding`和`border`.也就是说,如果给盒子添加`padding`或`border`,那么真正放置内容的`content`会减小,但是它可以稳固页面的结构.
 
+   总宽度 = `margin + width`.
+
+3. `inherit`:从父元素继承`box-sizing`属性.
 
 # 9 边框圆角
 
@@ -1968,4 +2003,10 @@ device是设备的意思，我们知道在移动端适配中，往往会将width
 	}
 }
 ```
+
+
+
+
+
+# BFC
 
