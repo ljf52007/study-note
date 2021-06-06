@@ -345,11 +345,58 @@ text-decoration
 
 2. 块级元素-定宽
 
+   ```
+   margin: 0 auto;
+   ```
+
    
 
 3. 块级元素-不定宽
 
+   1. `table`布局
 
+   2. `position`+`transform`
+
+      ```css
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      ```
+
+      
+
+​	垂直居中
+
+1. 块级元素-定高
+
+   ```css
+   height: 100px;
+   position: absolute;
+   top: 50%;
+   margin-top: -50px;
+   ```
+
+   
+
+2. 块级元素-不定高
+
+   - `position`+`transform`
+
+     ```css
+     position: absolute;
+     top: 50%;
+     transform: translateY(-50%);
+     ```
+
+   - `flex`
+
+   - `
+
+   - `
+
+   
+
+   
 
 ## 4.2 行内元素水平居中
 
@@ -378,60 +425,6 @@ div{
 ```
 
 
-
-## 4.3 行内元素垂直居中
-
-行内元素的垂直居中，只需要将行高（line-height）设为与容器高度（height）相同即可：
-
-```css
-div{
-    height: 50px;
-}
-span{
-    line-height: 50px;    
-}
-```
-
-
-
-## 4.4 块元素水平居中
-
-### 4.4.1 margin: 0 auto
-
-```css
-.son{
-    margin: 0 auto;
-}
-```
-
-
-
-### 4.4.2 绝对定位+margin设置宽度值/2
-
-```css
- 
-.son{
-    width: 100px;
-    position: absolute;
-    left: 50%;
-    margin-left: -50px;
-}
-```
-
-实际上，这种方法需要计算元素的宽度值，较为麻烦，我们更常用的为下面的这种方法，原理虽然不同，但是思想是差不多的。
-
-
-
-### 4.4.3 绝对定位+transform偏移-50%
-
-```css
-.son{
-    width: 100px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-```
 
 
 
