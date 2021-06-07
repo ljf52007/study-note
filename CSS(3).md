@@ -318,9 +318,7 @@ text-decoration
 | display: inline;       | 设置为行内元素   |
 | display: inline-block; | 设置为行内块元素 |
 
-
-
-水平居中
+## 4.2 水平居中
 
 1. 行内元素:
 
@@ -349,8 +347,6 @@ text-decoration
    margin: 0 auto;
    ```
 
-   
-
 3. 块级元素-不定宽
 
    1. `table`布局
@@ -363,9 +359,8 @@ text-decoration
       transform: translateX(-50%);
       ```
 
-      
 
-​	垂直居中
+## 	4.3 垂直居中
 
 1. 块级元素-定高
 
@@ -375,8 +370,6 @@ text-decoration
    top: 50%;
    margin-top: -50px;
    ```
-
-   
 
 2. 块级元素-不定高
 
@@ -390,95 +383,111 @@ text-decoration
 
    - `flex`
 
-   - `
+   - `IFC`+`vertical-align: middle`
 
-   - `
-
-   
-
-   
-
-## 4.2 行内元素水平居中
-
-行内元素的水平居中十分容易，只需要在容器加下面这行代码即可:
-
-```css
-div{
-    text-align: center;	
-}
-```
-
-有时候 text-align: center 也会和 display: inline-block 配合使用，实现行内多个块级元素的水平居中:
-
-```css
-div{
-    text-align: center;
-}
- 
-#div1{
-    display: inline-block;
-}
-#div2{
-    display: inline-block;
-}
- 
-```
+     ```
+  
+     ```
 
 
+## 4.4 水平-垂直居中
+
+1. 不定高:
+
+   ```html
+   <div class="father">
+       <div class="son">这些文字会把son的高度撑开这些文字会把son的高度撑开</div>
+   </div>
+   ```
+
+   - `position`+`transform`
+
+     ```css
+     .father {
+         width: 200px;
+         height: 200px;
+         background: yellow;
+         position: relative;
+     }
+     .son {
+         width: 50%;
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+         background: red;
+     }
+     ```
+
+   - `flex`
+
+     ```css
+     .father {
+         width: 200px;
+         height: 200px;
+         background: yellow;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+     }
+     .son {
+         width: 50%;
+         background: red;
+     }
+     ```
+
+2. 定高
+
+   - 上述的两种不定高的方法都能用
+
+   - `margin`+绝对定位
+
+     ```css
+     .father {
+         width: 200px;
+         height: 200px;
+         background: yellow;
+         position: relative;
+     }
+     .son {
+         width: 100px;
+         height: 100px;
+         background: red;
+         position: absolute;
+         top: 0;
+         bottom: 0;
+         left: 0;
+         right: 0;
+         margin: auto;
+     }
+     ```
+
+   - `position`+`margin`
+
+     ```css
+     .father {
+         width: 200px;
+         height: 200px;
+         background: yellow;
+         position: relative;
+     }
+     .son {
+         width: 100px;
+         height: 100px;
+         background: red;
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         margin-top: -50px;
+         margin-left: -50px;
+     }
+     ```
 
 
 
-## 4.5 块元素垂直、水平居中
+## 4.5 伸缩盒子的对齐方式
 
-
-
-
-
-### 4.5.1 绝对定位+margin:auto：
-
-适用：
-
-```css
-.son{
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-}
-```
-
-
-
-```css
-.son{
-	width: 100px;
-	height: 100px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -50px;
-    margin-left: -50px;
-}
-```
-
-
-
-```
-.son{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-```
-
-
-
-### 4.5.2 伸缩盒子的对齐方式
-
-将父盒子设置为伸缩盒子
+将父盒子设置为伸缩盒子,可以实现水平-垂直居中:
 
 ```css
 .father{
@@ -495,43 +504,28 @@ div{
 **单独设置某一个子元素垂直居中：**
 
 ```css
-div {
-  width: 500px;
-  height: 500px;
-  border: 1px solid yellow;
-  display: flex;
-}
-section {
-  width: 100px;
-  height: 100px;
-  background: red;
-}
-section:first-of-type {
-  align-self: center;
+.son:first-of-type {
+    align-self: center;
 }
 ```
-
-
 
 **单独设置某一个子元素水平居中：**
 
 ```css
-div {
-  width: 500px;
-  height: 500px;
-  border: 1px solid yellow;
-  display: flex;
-  flex-direction: column;
-  /* justify-content: center; */
-  /* align-items: center; */
+.father {
+    width: 200px;
+    height: 200px;
+    background: yellow;
+    display: flex;
+    flex-direction: column;
 }
-section {
-  width: 100px;
-  height: 100px;
-  background: red;
+.son {
+    width: 100px;
+    height: 100px;
+    border: 1px solid red;
 }
-section:first-of-type {
-  align-self: center;
+.son:first-of-type {
+    align-self: center;
 }
 ```
 
@@ -2001,5 +1995,160 @@ device是设备的意思，我们知道在移动端适配中，往往会将width
 
 
 
-# BFC
+# 20 BFC
+
+`BFC`即`block formatting context`,块级格式化上下文,是一个独立的渲染区域,处于`BFC`内部的元素与外部的元素相互隔离,使内外元素的定位不会互相影响.
+
+## 20.1 触发条件
+
+1. 根元素<html>
+2. `position`为`absolute`或`fixed`
+3. `display`为`inline-block`或`table`
+4. `float`不为`none`
+5. `overflow`不为`visible`
+
+## 20.2 规则
+
+## 20.3 应用
+
+1. 边距重叠问题
+
+   ```html
+   <div class="box box1"></div>
+   <p>
+       <div class="box box2"></div>
+   </p>
+   ```
+
+   将第二个`div`用一个`p`标签包裹,并且给`p`标签设置`overflow:hidden`
+
+   ```css
+   .box {
+       width: 100px;
+       height: 100px;
+       background: red;
+   }
+   .box1 {
+       margin-bottom: 10px;
+   }
+   p {
+       overflow: hidden;
+   }
+   .box2 {
+       margin-top: 10px;
+   }
+   ```
+
+2. 盒子塌陷问题
+
+   ```html
+   <div class="father">
+       <div class="son"></div>
+   </div>
+   ```
+
+   ```css
+   .father {
+       width: 200px;
+       height: 200px;
+       background: red;
+   }
+   .son {
+       width: 100px;
+       height: 100px;
+       background: yellow;
+       margin-top: 20px;
+   }
+   ```
+
+   给子盒子设置`margin-top`,会发现父盒子跟着塌陷.
+
+   解决方式是创建`BFC`,将父盒子设置为独立渲染区域:
+
+   ```css
+   .father {
+       width: 200px;
+       height: 200px;
+       background: red;
+       overflow: hidden;
+   }
+   ```
+
+3. 清除浮动
+
+   ```html
+   <div class="father">
+       <div class="son"></div>
+       <div class="son"></div>
+   </div>
+   <div class="mother"></div>
+   ```
+
+   ```css
+   .son {
+       width: 100px;
+       height: 100px;
+       background: yellow;
+       float: left;
+   }
+   ```
+
+   给`son`添加`float`,会使得盒子脱离文档流,导致`mother`被覆盖
+
+   解决方式是创建`BFC`,将`father`设置为独立渲染区域:
+
+   ```css
+   .father {
+       overflow: hidden;
+   }
+   .son {
+       width: 100px;
+       height: 100px;
+       background: yellow;
+       float: left;
+   }
+   .mother {
+       width: 200px;
+       height: 200px;
+       background: red;
+       /*overflow: hidden;*/
+       /*注意,给father添加overflow,和给mother添加overflow是不同的*/
+       /*前者是将father设置为独立渲染区域,*/
+   }
+   ```
+
+4. 浮动环绕文字问题
+
+   ```html
+   <div class="father">
+       <div class="box"></div>
+       <div class="msg">文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊文字啊</div>
+   </div>
+   ```
+
+   ```css
+   .father {
+       width: 200px;
+       height: 200px;
+       background: yellow;
+   }
+   .box {
+       width: 100px;
+       height: 100px;
+       background: red;
+       float: left;
+   }
+   ```
+
+   给`box`添加浮动,此时`msg`的文字会环绕`box`
+
+   解决方式是创建`BFC`,将`msg`设置为独立渲染区域:
+
+   ```css
+   .msg {
+   	overflow: hidden;
+   }
+   ```
+
+   
 
