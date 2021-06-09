@@ -386,7 +386,7 @@ text-decoration
    - `IFC`+`vertical-align: middle`
 
      ```
-  
+      
      ```
 
 
@@ -2150,5 +2150,146 @@ device是设备的意思，我们知道在移动端适配中，往往会将width
    }
    ```
 
+
+
+
+# 21 层叠上下文(`Stack Context`)
+
+## 21.1 创建层叠上下文
+
+满足以下条件之一的元素会创建一个层叠上下文:(需要特别记忆的已经加粗)
+
+1. **文档根元素<html>**;
+2. **`position`值为`absolute`或`relative`,且`z-index`值不为`auto`;**
+3. **`position`值为`fixed`或`sticky`的元素(粘滞定位适配所有移动设备上的浏览器,但老的桌面浏览器不支持);**
+4. **`flex`容器的子元素,且`z-index`值不为`auto`;**
+5. `grid`容器的子元素,且`z-index`值不为`auto`;
+6. **`opacity`属性值小于1的元素;**
+7. `mix-blend-mode`属性值不为`normal`的元素;
+8. 以下任意属性值不为`none`的元素:
+   - **`transform`**
+   - `filter`
+   - `perspective`
+   - `clip-path`
+   - `mask`/`mask-image`/`mask-border`
+9. `isolation`属性值为`isolate`的元素;
+10. `-webkit-overflow-scrolling`属性值为`touch`的元素;
+11. `will-change`值设定了任一属性而该属性在`non-initial`值时会创建层叠上下文的元素;
+12. `contain`属性值为`layout`,`paint`或包含他们其中之一的合成值(比如`contain:strict`,`contain:content`)的元素.
+
+## 21.2 层叠等级
+
+著名的七阶层叠水平(`stacking level`):
+
+- 正值`z-index`
+  - `z-index: auto`或看成`z-index: 0`
+    - `inline/inline-block`水平盒子
+      - `float`浮动盒子
+        - `block`块状水平盒子
+          - 负值`z-index`
+            - 层叠上下文`background/border`
+
+## 21.3 `z-index`
+
+1. `z-index`只对`position`不为`static的属性有效`,默认情况下`z-index:auto`;
+
+2. `z-index: auto`和`z-index: 0`虽然在同一个层叠面,但是意义不同:
+
+   ```html
+   <div class="box_1">1
+       <div class="box_1_1"></div>
+   </div>
+   <div class="box_2">2</div>
+   ```
+
+   ```css
+   .box_1 {
+       width: 200px;
+       height: 200px;
+       background: coral;
+       position: relative;
+       z-index: auto;
+       /* z-index: 0; */
+   }
+   .box_1_1 {
+       width: 150px;
+       height: 150px;
+       background: blue;
+       position: absolute;
+       z-index: 100;
+   }
+   .box_2 {
+       width: 200px;
+       height: 200px;
+       background: aquamarine;
+       position: absolute;
+       left: 100px;
+       top: 100px;
+   }
+   ```
+
+   如上,将`box_1`的`z-index`设置为`auto`和`0`,会得到不同的结果:
+
+   前者是默认样式,并不会创建层叠上下文,此时`box_1_1`会遮盖`box_2`;
+
+   后者是设置`box_1`的`z-index`,配合`position: relative`,会创建一个`stack context`,`box_1_1`作为该层叠上下文的子元素,此时无论给`box_1_1`设置多大的`z-index`都不会遮盖`box_2`(不在同一个`stack context`)
+
+3. `z-index: 10`一定在`z-index: 5`上面吗?
+
+   答案是否定的.同一个`stack context`中`z-index`越大越在上面.但是如果两个元素不在同一个`stack context`,那相当于他们不在同一个世界,不在同一个世界的两个元素`z-index`无法比较.
+
+4. 如果父级元素无定位属性,子级元素有定位属性,那么此时`z-index`为负值的元素在父级的`background`下面:
+
+   ```html
+   <div class="box_1">1
+       <div class="box_1_1"></div>
+   </div>
+   ```
+
+   ```css
+   .box_1 {
+       width: 200px;
+       height: 200px;
+       background: coral;
+   }
+   .box_1_1 {
+       width: 150px;
+       height: 150px;
+       background: blue;
+       position: absolute;
+       z-index: -100;
+   }
+   ```
+
+   如果父级元素有定位属性,那么此时`z-index`为负值的元素在父级的`background`上面:
+
+   ```css
+   .box_1 {
+       width: 200px;
+       height: 200px;
+       background: coral;
+       position: relative;
+   }
+   .box_1_1 {
+       width: 150px;
+       height: 150px;
+       background: blue;
+       position: absolute;
+       z-index: -100;
+   }
+   ```
+
    
+
+
+
+
+
+
+
+
+
+
+
+
 
