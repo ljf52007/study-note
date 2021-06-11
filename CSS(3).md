@@ -1,6 +1,6 @@
 # 1 选择器
 
-CSS(3)中提供的选择器手册（w3school）：http://www.w3school.com.cn/cssref/css_selectors.asp
+`CSS(3)`中提供的选择器手册`(w3school)`：http://www.w3school.com.cn/cssref/css_selectors.asp
 
 ## 1.1 基本选择器
 
@@ -31,14 +31,19 @@ CSS(3)中提供的选择器手册（w3school）：http://www.w3school.com.cn/css
 
 ## 1.3 伪类选择器
 
+> 伪类存在的意义是为了通过选择器找到那些不存在`DOM`树中的信息以及不能被常规`CSS`选择器获取到的信息
+
+1. 获取不存在与`DOM`树中的信息。比如`a`标签的`:link`、`visited`等，这些信息不存在与`DOM`树结构中，只能通过`CSS`选择器来获取；
+2. 获取不能被常规`CSS`选择器获取的信息。比如：要获取第一个子元素，我们无法用常规的`CSS`选择器获取，但可以通过 `:first-child` 来获取到。
+
 ### 1.3.1 超链接伪类选择器
 
-| 写法        | 说明                      |
-| ----------- | ------------------------- |
-| `a:link`    | 定义a元素未访问时的样式   |
-| `a:visited` | 定义a元素访问后的样式     |
-| `a:hover`   | 定义鼠标经过a元素时的样式 |
-| `a:active`  | 定义鼠标点击激活时的样式  |
+| 写法        | 说明                        |
+| ----------- | --------------------------- |
+| `a:link`    | 定义`a`元素未访问时的样式   |
+| `a:visited` | 定义`a`元素访问后的样式     |
+| `a:hover`   | 定义鼠标经过`a`元素时的样式 |
+| `a:active`  | 定义鼠标点击`a`激活时的样式 |
 
 注意：
 
@@ -75,8 +80,11 @@ CSS(3)中提供的选择器手册（w3school）：http://www.w3school.com.cn/css
 
 需要重点说明的是关于 `nth-child(n)` 和 `nth-of-type(n) `中的`n`，它遵循线性变化，取值范围为0~查找元素的长度。但是当 `n≤0`时，选取是无效的。如当 `n` 是一个表达式，`nth-of-type(-n+5)` 表示查找 `nth-of-type(5)、nth-of-type(4)、nth-of-type(3)、nth-of-type(2)、nth-of-type(1)`，即查找前五个子元素 。
 
-
 ## 1.4 伪元素选择器
+
+> 伪元素用于创建一些不在文档树中的元素，并为其添加样式。比如说，我们可以通过`:before`来在一个元素前增加一些文本，并为这些文本添加样式。虽然用户可以看到这些文本，但是这些文本实际上不在文档树中。常见的伪元素有：`::before`，`::after`，`::first-line`，`::first-letter`，`::selection`、`::placeholder`等
+
+> 因此，伪类与伪元素的区别在于：有没有创建一个文档树之外的元素
 
 | 例子              | 说明                                                         |
 | ----------------- | ------------------------------------------------------------ |
@@ -95,6 +103,19 @@ CSS(3)中提供的选择器手册（w3school）：http://www.w3school.com.cn/css
 3. 在`CSS2`中是伪类——`E:before、E:after`，在`CSS3`中是伪元素——`E::before、E::after`。在新版本下，`E:after、E:before`会被自动识别为`E::after、E::before`。有时为了兼容处理，还是会写成`E:after、E:before`。
 
 
+
+## 1.5 浏览器是如何解析`css`选择器的
+
+样式系统从关键选择器开始匹配，然后左移查找规则选择器的祖先元素。只要选择器的子树一直在工作，样式系统就会持续左移，直到和规则匹配，或者是因为不匹配而放弃该规则。
+
+采用这种解析方式的原因是:
+
+- `HTML` 经过解析生成` DOM Tree`；而在 `CSS` 解析完毕后，需要将解析的结果与 `DOM Tree` 的内容一起进行分析建立一棵 `Render Tree`，最终用来进行绘图。`Render Tree` 中的元素（`WebKit` 中称为`renderers`，`Firefox` 下为`frames`）与 `DOM `元素相对应，但非一一对应：一个 `DOM` 元素可能会对应多个 `renderer`，如文本折行后，不同的「行」会成为 `render tree` 种不同的 `rendere`r。也有的 `DOM` 元素被` Render Tree` 完全无视，比如 `display:none` 的元素。
+- 在建立` Render Tree` 时（`WebKit`中的`Attachment`过程），浏览器就要为每个 `DOM Tree` 中的元素根据 `CSS` 的解析结果（`Style Rules`）来确定生成怎样的` renderer`。对于每个 `DOM` 元素，必须在所有 `Style Rules` 中找到符合的 `selector` 并将对应的规则进行合并。选择器的「解析」实际是在这里执行的，在遍历 `DOM Tree` 时，从 `Style Rules` 中去寻找对应的 `selector`。
+- 因为所有样式规则可能数量很大，而且绝大多数不会匹配到当前的 `DOM` 元素（因为数量很大所以一般会建立规则索引树），所以有一个快速的方法来判断「这个` selector` 不匹配当前元素」就是极其重要的。
+- 如果正向解析，例如「`div div p em`」，我们首先就要检查当前元素到 `html` 的整条路径，找到最上层的 div，再往下遍历，如果遇到不匹配的就需要回溯到顶层,如此回溯若干次才能找到确切的`dom`;
+- 逆向匹配则不同，如果当前的 `DOM` 元素是 div，而不是 `selector` 最后的 `em`，那只要一步就能排除。只有在匹配时，才会不断向上找父节点进行验证。
+- 因为匹配的情况远远低于不匹配的情况，所以逆向匹配带来的优势是巨大的。同时我们也能够看出，在选择器结尾加上「*」就大大降低了这种优势，这也就是很多优化原则提到的尽量避免在选择器末尾添加通配符的原因。
 
 # 2 `CSS`优先级算法
 
@@ -681,7 +702,61 @@ rgba来控制颜色和透明度，相对于 opacity，不具有继承性。
 
 
 
-# 7 阴影
+# `CSS3`新特性
+
+`box-sizing:content-box | border-box`:盒模型
+
+`text-shadow`:水平阴影,垂直阴影,模糊的距离,以及阴影的颜色
+
+`box-shadow`:阴影
+
+`box-radius`:圆角
+
+`gradient`:渐变
+
+`word-break:normal|break-all|keep=all`:文字换行(默认 | 单词也可以换行 | 只在半角空格或连字符换行)
+
+`text-overflow`: 文字超出部分处理
+
+`transition`:过渡
+
+`transform`:旋转,缩放,移动,倾斜
+
+`animation`:动画
+
+`@media screen and (max-width: 960px) {}`:媒体查询
+
+`calc`函数
+
+等等...
+
+# 盒模型
+
+`CSS`的盒子结构如下图：`content`+`padding`+`border`+`margin`.
+
+![CSS盒结构](./images/HTML5+CSS3/CSS盒结构.png)
+
+盒模型是页面渲染时,`dom`元素所采用的布局模型.可通过`box-sizing`进行设置.
+
+我们在`CSS`中设置 宽高`width`和`height`,默认情况下,盒子的宽高指的是`content`的宽高,即`box-sizing`默认值为`content-box`.`content-box`往往会造成，当我给一个盒子添加 border 或 padding 的时候，页面结构产生错位。这是由于父盒子的宽度已经不够支撑四个子盒子的宽度总和了。这时候我们可能会将父盒子的宽度调大一点，但是这样子去调试往往是不符合需求的。
+
+我们可以通过`box-sizing`设置盒模型来解决这个问题,`box-sizing`有以下两种属性值:
+
+1. `box-sizing: content-box`:标准盒模型
+
+   即默认情况下的盒模型,设置盒子的`width`和`height`仅仅是`content`的宽高.
+
+   总宽度 = `margin + border + padding + width`.
+
+2. `box-sizing: border-box`:怪异盒模型(或IE盒模型)
+
+   设置的`width`属性值就是盒子的最终宽度,包含`padding`和`border`.也就是说,如果给盒子添加`padding`或`border`,那么真正放置内容的`content`会减小,但是它可以稳固页面的结构.
+
+   总宽度 = `margin + width`.
+
+3. `inherit`:从父元素继承`box-sizing`属性.
+
+# 阴影
 
 ## 7.1 文本阴影
 
@@ -691,7 +766,7 @@ rgba来控制颜色和透明度，相对于 opacity，不具有继承性。
 text-shadow: offsetX offsetY blur color;
 ```
 
-其中，offsetX 和 offsetY 分别表示坐标轴坐标；blur 为模糊值。
+其中，`offsetX` 和 `offsetY` 分别表示坐标轴坐标；blur 为模糊值。
 
 可以同时为一个文本设置多种阴影：
 
@@ -725,35 +800,7 @@ inset 表示内阴影。一般配合设置两个阴影，以达到四个方向�
 {box-shadow: -10px 10px 5px 0px rgba(0,0,150,0.2) inset,10px -10px 5px 0px rgba(0,0,150,0.2) inset;}
 ```
 
-
-
-# 8 盒模型
-
-`CSS`的盒子结构如下图：`content`+`padding`+`border`+`margin`.
-
-![CSS盒结构](./images/HTML5+CSS3/CSS盒结构.png)
-
-盒模型是页面渲染时,`dom`元素所采用的布局模型.可通过`box-sizing`进行设置.
-
-我们在`CSS`中设置 宽高`width`和`height`,默认情况下,盒子的宽高指的是`content`的宽高,即`box-sizing`默认值为`content-box`.`content-box`往往会造成，当我给一个盒子添加 border 或 padding 的时候，页面结构产生错位。这是由于父盒子的宽度已经不够支撑四个子盒子的宽度总和了。这时候我们可能会将父盒子的宽度调大一点，但是这样子去调试往往是不符合需求的。
-
-我们可以通过`box-sizing`设置盒模型来解决这个问题,`box-sizing`有以下两种属性值:
-
-1. `box-sizing: content-box`:标准盒模型
-
-   即默认情况下的盒模型,设置盒子的`width`和`height`仅仅是`content`的宽高.
-
-   总宽度 = `margin + border + padding + width`.
-
-2. `box-sizing: border-box`:怪异盒模型(或IE盒模型)
-
-   设置的`width`属性值就是盒子的最终宽度,包含`padding`和`border`.也就是说,如果给盒子添加`padding`或`border`,那么真正放置内容的`content`会减小,但是它可以稳固页面的结构.
-
-   总宽度 = `margin + width`.
-
-3. `inherit`:从父元素继承`box-sizing`属性.
-
-# 9 边框圆角
+#  边框圆角
 
 border-radius 可以用来设置边框圆角。后面的像素值表示半径，拿右上角作为例子来解释：（如图）
 
@@ -778,9 +825,7 @@ border-radius 可以用来设置边框圆角。后面的像素值表示半径，
 | border-bottom-right: 10px 20px;                        | 指定位置设置 水平x/垂直y 方向的半径值                        |
 | border-radius:100px 80px 60px 40px/20px 30px 40px 50px | 设置四个角点的 水平x/垂直y 方向上的不同圆角值，一一对应      |
 
-
-
-# 10 渐变
+#  渐变
 
 由于渐变效果不是单一的颜色，而是图像，因此应该写在 background 中。如
 
@@ -862,6 +907,509 @@ radial-gradient(形状 大小 at 坐标, 颜色1 位置百分比, 颜色2 位置
 ![重复渐变2](./images/HTML5+CSS3/重复渐变2.png)
 
 
+
+# 文本处理
+
+## `word-break`
+
+| 属性值      | 说明                         |
+| ----------- | ---------------------------- |
+| `normal`    | 使用浏览器默认的换行规则     |
+| `break-all` | 允许在单词间换行             |
+| `keep-all`  | 只能在半角空格或连字符处换行 |
+
+
+
+## 文字超出显示省略号
+
+1. 单行省略
+
+   ```css
+   div {
+       width: 200px;
+   	overflow: hidden;
+       text-overflow: ellipsis;
+       white-space: nowrap;
+   }
+   ```
+
+   
+
+2. 多行省略
+
+   ```css
+   div {
+   	display: -webkit-box;
+       -webkit-box-orient: vertical;
+       -webkit-line-clamp: 3;
+       overflow: hidden;
+   }
+   ```
+
+   该方法适用于WebKit浏览器及移动端.
+
+   兼容方案:使用伪元素`::before`或通过`JS`实现.
+
+# 13 过渡 transition
+
+| 过渡样式                   | 说明                                                        |
+| -------------------------- | ----------------------------------------------------------- |
+| transition-property        | 添加过渡效果的样式属性名称                                  |
+| transition-duration        | 过渡效果的耗时，以秒（s）作为单位                           |
+| transition-timing-function | 过渡时间函数，控制过渡的速度，匀速是linear                  |
+| transition-delay           | 过渡效果的延迟，默认为0s                                    |
+| step(x)                    | 把过渡分为指定的 x 步进行                                   |
+| 简写                       | transition: property duration timing-function delay step(4) |
+
+注意：
+
+（1）过渡效果执行完毕之后，默认会还原到原始状态
+
+（2）**过渡效果只能产生从某个值到另外一个具体的值的过渡，例如它无法从 display: none 过渡到 display: block ，可以从 height: 0px 过渡到height: 10px。**
+
+（3）过渡存在一些兼容性的问题，最好添加前缀，如
+
+            -moz-transition
+            -webkit-transition
+            -o-transition
+
+## 案例
+
+学习了过渡之后，我就可以对我之前做的仿小米官网静态页面进行改进，比如将下拉框用过渡样式来做，视觉效果比用 display: none / display: block 组合好很多。
+
+关键代码：
+
+```css
+            width: 100%;
+            height:0px;
+            overflow: hidden;
+            /*display: none;*/
+            /*添加过渡效果:过渡效果只能产生从某个值到另外一个具体的值的过渡*/
+            /*1.一定要设置为哪些css样式添加过渡效果*/
+            /*transition-property: display;*/
+            transition-property: height;
+            /*2.一定要设置过渡效果的耗时*/
+            transition-duration: 1s;
+```
+
+
+
+# 14 transform
+
+- 常用功能：移动、缩放、旋转、斜切
+
+- 执行完毕后会恢复到原始状态
+
+## 14.1 移动：translate
+
+说明：
+
+1. 移动参照移动元素的左上角；
+
+2. 参数为一个时，指水平x 移动；
+
+3. 参数为两个时，指水平x、垂直y 移动；
+
+4. 特指水平x移动：transform: translateX(xpx);
+
+5. 特指垂直y移动：transform: translateY(ypx);
+
+## 14.2 缩放：scale
+
+说明：
+
+1. 参数为1时不变化，参数大于1时放大，小于1时缩小；
+
+2. 参数为一个时，表示x和y方向等比例缩放；
+
+3. 参数为两个时，表示指定 x/y 方向缩放；
+
+4. 特指x方向缩放：transform: scaleX(x);
+
+5. 特指y方向缩放：transform: scaleY(y);
+
+## 14.3 旋转：rotate
+
+说明：
+
+1. 参数为角度，正值为顺时针旋转，负值为逆时针旋转；
+
+2. transform-origin 可以设置旋转轴心（两种方式：一种是 x y 值；一种是关键字如 left、right、top、bottom、left top 等）
+
+## 14.4 斜切：skew
+
+说明：
+
+1. 参数为角度：如果角度为正，则往当前轴的负方向斜切，如果角度为负，则往当前轴的正方向斜切，如下图：（以transform: skew(60deg) 为例）
+
+   ![skew](./images/HTML5+CSS3/skew.png)
+
+2. 参数为两个时，表示先在x斜切，再在y斜切；
+
+3. 特指x或y方向斜切：transform: skewX(xdeg)、transform: skewY(ydeg);
+
+
+
+## 14.5 添加多个transform属性
+
+添加多个 transform是属性时，切记不能一行一行添加，如下：
+
+```
+transform: translate(100px,100px);
+transform: rotate(30deg);
+```
+
+这段CSS代码执行结果是只旋转不移动的。原因是第一条样式已经被第二条样式覆盖了。正确的写法如下：
+
+```
+transform: translate(100px,100px) rotate(30deg);
+```
+
+并且还要注意，**当我们用 transform 的 rotate 进行旋转的，包括坐标系也会被旋转，这就决定了下面这两行代码实现效果是不同的：**
+
+```
+transform: translate(100px,100px) rotate(-90deg);
+transform: rotate(-90deg) translate(100px,100px);
+```
+
+第一行是先向x移动，后旋转，此时是向右移动的；
+
+第二行是先旋转，后移动，此时由于坐标系也旋转了，因此x已经指向上面了，因此是向上移动。
+
+
+
+# 15 transform的3D变换
+
+在CSS3中，我们可以用一个三维坐标系来表示一个3d空间：
+
+![CSS中的3d空间](./images/HTML5+CSS3/CSS中的3d空间.png)
+
+其中，z轴指向的是屏幕向外。
+
+要实现3d的移动、缩放、旋转，也需要用到 transform样式。
+
+## 三维移动
+
+```
+transform: translate3d(x, y, z);
+```
+
+其中x、y、z分别表示x、y、z方向上的偏移像素值。
+
+也可以分开写：translateX(x)、translateY(y)、translateZ(z)
+
+## 三维缩放
+
+```
+transform: scale3d(x, y, z);
+```
+
+其中x、y、z分别表示x、y、z方向上的缩放。缩放值与2d的类似，1不缩放，＜1缩小，＞1放大。
+
+也可以分开写：scaleX(x)、scaleY(y)、scaleZ(z)
+
+## 三维旋转
+
+transform: rotate3d(x, y, z, angle);
+
+这里的x，y，z决定的（x，y，z）其实就是一个向量，相信稍微学过一点数学的人都能理解。
+
+angle代表角度，取正取负有一个很实用的方法：**左手原则，即用左手竖起大拇指，大拇指指向的方向与（x，y，z）向量指向的方向相同，四指环绕的方向即为正方向。**
+
+也可以分开写：
+
+| 写法           | 说明        |
+| -------------- | ----------- |
+| rotateX(angle) | 围绕X轴旋转 |
+| rotateY(angle) | 围绕Y轴旋转 |
+| rotateZ(angle) | 围绕Z轴旋转 |
+
+## 立方体案例
+
+在做立方体之前，先补两个知识：
+
+- **transform-style**：使被转换的子元素（注意是子元素）保留其3d转换（需设置在父元素中），它有如下两个属性值：
+
+| 属性        | 说明                                |
+| ----------- | ----------------------------------- |
+| flat        | 子元素将不保留其 3D 位置-平面方式。 |
+| preserve-3d | 子元素将保留其 3D 位置—立体方式。   |
+
+- 景深、透视效果：
+
+（1）**perspective(length)** ：为一个元素设置三维透视的距离。仅作用于元素的后代，而不是其元素本身。当perspective:none/0;时，相当于没有设perspective(length)。例如我要建立一个小立方体，长宽高都是200px。如果我将 perspective < 200px ，那就相当于站在盒子里面看的结果，如果perspective 非常大那就是站在非常远的地方看（立方体已经成了小正方形了），意味着**perspective 属性指定了观察者与z=0平面的距离**，使具有三维位置变换的元素产生透视效果
+（2）**perspective-origin**：属性规定了镜头在平面上的位置，默认是放在元素的中心。如perspective-origin: 10px 10px; 表示从右下方观察。
+
+根据3d移动和3d旋转，可以很容易的实现一个立方体，实现效果如下图：
+
+![立方体](./images/HTML5+CSS3/立方体.png)
+
+代码如下：
+
+```html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style type="text/css">
+		.box{
+			width: 200px;
+			height: 200px;
+			margin: 100px auto;
+			position: relative;
+			/* 将立方体旋转一定角度便于观察 */
+			transform: rotate3d(1,1,0,30deg);
+			/*让子元素保留3d变换之后的效果*/
+			transform-style: preserve-3d;
+			/* 景深透视效果 */
+			perspective: 0px;
+			/* 设置景深透视的观察角度 */
+			perspective-origin: 0px 0px;
+		}
+		.box > div{
+			width: 200px;
+			height: 200px;
+			position: absolute;
+			opacity: 0.5;
+		}
+		.front{
+			background-color: red;
+			transform: translateZ(100px);
+		}
+		.back{
+			background-color: blue;
+			transform: translateZ(-100px) rotateX(180deg);
+		}
+		.left{
+			background-color: green;
+			transform: translateX(-100px) rotateY(-90deg);
+		}
+		.right{
+			background-color: orange;
+			transform: translateX(100px) rotateY(90deg); 
+		}
+		.top{
+			background-color: yellow;
+			transform: translateY(-100px) rotateX(90deg);
+		}
+		.bottom{
+			background-color: purple;
+			transform: translateY(100px) rotateX(-90deg);
+		}
+	</style>
+</head>
+<body>
+	<div class="box">
+		<div class="front">front</div>
+		<div class="back">back</div>
+		<div class="left">left</div>
+		<div class="right">right</div>
+		<div class="top">top</div>
+		<div class="bottom">bottom</div>
+	</div>
+</body>
+</html>
+```
+
+
+
+# 16 animation动画
+
+严格上过渡并不算是真正意义上自由的动画，因为它只是初始状态过渡到了最终状态的一个过程。可以理解为只有两个节点。
+
+CSS3的 animation 样式提供了**关键帧**动画，通过关键字 **@keyframes** 配合 **animation** 可以设置多个节点（可理解为帧数）来精确控制一个或一组动画，常用来实现复杂的动画效果。
+
+| 样式                           | 说明                                                      |
+| ------------------------------ | --------------------------------------------------------- |
+| animation-name                 | 指定动画名称                                              |
+| animation-duration             | 设置动画的总耗时，单位为s                                 |
+| animation-iteration-count      | 设置动画播放的次数，参数为数字或infinite（无穷），默认为1 |
+| animation-direction: altermate | 设置交替动画，alternate属性代表来回交替                   |
+| animation-delay                | 设置延迟，单位为s                                         |
+| animation-timing-function      | linear 设置匀速                                           |
+| animation-play-state           | 设置动画播放的状态，running是播放，paused是暂停           |
+
+**animation-fill-mode:**
+
+设置动画结束时的状态，它有三种属性：
+
+（1）**forwards**:会保留动画结束时的状态，在有延迟的情况下，并不会立刻进行到动画的初始状态
+（2）**backwards**:不会保留动画结束时的状态，在添加了动画延迟的前提下，如果动画有初始状态，那么会立刻进行到初始状态
+（3）（默认）**both**:会保留动画的结束时状态，在有延迟的情况下也会立刻进入到动画的初始状态
+
+
+
+@keyframes
+
+@keyframes 指定动画的关键帧，用百分比来将动画分成多个节点（其中0%可用 from 代替，100%可用 to 代替）。我们来看一段它的代码：
+
+```css
+@keyframes flash_name{
+	from{}
+	50%{}
+	to{}
+}
+```
+
+其中 **flash_name** 就是指定的动画名称，它与 **animation-name** 对应。而from{}、50%{}、to{}表示三个节点，可分别在三个节点中添加样式。
+
+## 案例
+
+使用animation动画和transform移动实现无缝的图片滚动：
+
+```html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		ul,li{
+			list-style: none;
+		}
+		div{
+			width: 800px;
+			height: 150px;
+			margin: 100px auto;
+			overflow: hidden;
+		}
+		ul{
+			width: 200%;
+			animation-name: move;
+			animation-duration: 4s;
+			animation-iteration-count: infinite;
+			/* animation-direction: alternate; */
+			animation-timing-function: linear;
+			animation-fill-mode: backwards;
+		}
+		div:hover ul{
+			animation-play-state: paused;
+		}
+		li{
+			float: left;
+		}
+		img{
+			width: 200px;
+			height: 150px;
+		}
+		@keyframes move{
+			from{
+				transform: translateX(0px);
+			}
+			to{
+				transform: translateX(-800px);
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="box">
+		<ul>
+			<li><a href=""><img src="./onepiece.jpg" ></a></li>
+			<li><a href=""><img src="./huoying.jpeg" ></a></li>
+			<li><a href=""><img src="./reborn1.jpg" ></a></li>
+			<li><a href=""><img src="./jinji.jpg" ></a></li>
+			<li><a href=""><img src="./onepiece.jpg" ></a></li>
+			<li><a href=""><img src="./huoying.jpeg" ></a></li>
+			<li><a href=""><img src="./reborn1.jpg" ></a></li>
+			<li><a href=""><img src="./jinji.jpg" ></a></li>
+		</ul>
+	</div>
+</body>
+</html>
+```
+
+
+
+## animation 动画库
+
+animate.css 是CSS3的一个动画库，我这里先贴上一个 [animate.css网址](https://daneden.github.io/animate.css/)。可以通过这个网址下载 animate.css，也可以查看它的使用说明，甚至能对库里的动画效果进行演示。
+
+animate.css 动画库的使用我自己认为还是很简单的，毕竟就是一个包含了很多动画效果的 css 文件，很好理解。在使用的时候，我简单地将其分为三步：
+
+（1）调用库：
+
+```html
+<link rel="stylesheet" type="text/css" href="animate.css"/>
+```
+
+（2）添加类：
+
+在 animate.css 中，每种动画都用不同类名区分，若我们想要对某个元素添加某种动画效果，就只需要给这个元素添加对应的类名（注意在通过类名选择动画时，类名除了动画效果本身的类名外，还要有个 **animated** 类名）即可。
+
+当然了，为一个元素添加类名的方法那就多了去了，所以能实现各种方式来展现动画：
+
+```html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="animate.css"/>
+	<title></title>
+	<style type="text/css">
+		div{
+			width: 100px;
+			height: 100px;
+			background-color: #FF6700;
+			margin: 100px auto;
+		}
+	</style>
+</head>
+<body>
+	<div id="demo"></div>
+	<script type="text/javascript">
+		div = document.querySelector("#demo");
+		div.onclick = function(){
+			div.classList.add("animated");
+			div.classList.add("shake");
+			//设置setTimeout,设置在点击元素后移除动画效果,这样2s后再次点击依旧有动画效果
+			setTimeout(function(){
+				div.classList.remove("shake");
+			},2000);
+		}
+	</script>
+</body>
+</html>
+```
+
+（3）自行配置一些动画效果
+
+我们可以自行更改库中的动画的一些参数，比如我嫌上例中 shake 动画摇得太快了，就可以在css样式中将他的 animation-duration 改得大一点：
+
+```css
+#demo{
+	animation-duration: 5s;
+}
+```
+
+
+
+# `calc()`
+
+`calc`函数是`css3`新增的功能，可以使用`calc()`计算`border、margin、pading、font-size`和width等属性设置动态值
+
+```css
+#div1 {
+    position: absolute;
+    left: 50px;
+    width: calc( 100% / (100px * 2) );
+    /* 兼容写法 */
+    width: -moz-calc( 100% / (100px * 2) );
+    width: -webkit-calc( 100% / (100px * 2) );
+    border: 1px solid black;
+}
+```
+
+**注意点：**
+
+- 需要注意的是，运算符前后都需要保留一个空格，例如：`width: calc(100% - 10px)`;
+- `calc()`函数支持 `"+"`, "`-"`, `"*"`, `"/"` 运算;
+- 对于不支持 `calc()`的浏览器，整个属性值表达式将被忽略。不过我们可以对那些不支持`calc()`的浏览器，使用一个固定值作为回退。
 
 # 11 background 的使用
 
@@ -1143,442 +1691,6 @@ background-position 的用法很实用，比如之前我做一个轮播图的左
 
 
 
-
-# 13 过渡 transition
-
-| 过渡样式                   | 说明                                                        |
-| -------------------------- | ----------------------------------------------------------- |
-| transition-property        | 添加过渡效果的样式属性名称                                  |
-| transition-duration        | 过渡效果的耗时，以秒（s）作为单位                           |
-| transition-timing-function | 过渡时间函数，控制过渡的速度，匀速是linear                  |
-| transition-delay           | 过渡效果的延迟，默认为0s                                    |
-| step(x)                    | 把过渡分为指定的 x 步进行                                   |
-| 简写                       | transition: property duration timing-function delay step(4) |
-
-注意：
-
-（1）过渡效果执行完毕之后，默认会还原到原始状态
-
-（2）**过渡效果只能产生从某个值到另外一个具体的值的过渡，例如它无法从 display: none 过渡到 display: block ，可以从 height: 0px 过渡到height: 10px。**
-
-（3）过渡存在一些兼容性的问题，最好添加前缀，如
-
-            -moz-transition
-            -webkit-transition
-            -o-transition
-## 案例
-
-学习了过渡之后，我就可以对我之前做的仿小米官网静态页面进行改进，比如将下拉框用过渡样式来做，视觉效果比用 display: none / display: block 组合好很多。
-
-关键代码：
-
-```css
-            width: 100%;
-            height:0px;
-            overflow: hidden;
-            /*display: none;*/
-            /*添加过渡效果:过渡效果只能产生从某个值到另外一个具体的值的过渡*/
-            /*1.一定要设置为哪些css样式添加过渡效果*/
-            /*transition-property: display;*/
-            transition-property: height;
-            /*2.一定要设置过渡效果的耗时*/
-            transition-duration: 1s;
-```
-
-
-
-# 14 transform
-
-- 常用功能：移动、缩放、旋转、斜切
-
-- 执行完毕后会恢复到原始状态
-
-## 14.1 移动：translate
-
-说明：
-
-1. 移动参照移动元素的左上角；
-
-2. 参数为一个时，指水平x 移动；
-
-3. 参数为两个时，指水平x、垂直y 移动；
-
-4. 特指水平x移动：transform: translateX(xpx);
-
-5. 特指垂直y移动：transform: translateY(ypx);
-
-## 14.2 缩放：scale
-
-说明：
-
-1. 参数为1时不变化，参数大于1时放大，小于1时缩小；
-
-2. 参数为一个时，表示x和y方向等比例缩放；
-
-3. 参数为两个时，表示指定 x/y 方向缩放；
-
-4. 特指x方向缩放：transform: scaleX(x);
-
-5. 特指y方向缩放：transform: scaleY(y);
-
-## 14.3 旋转：rotate
-
-说明：
-
-1. 参数为角度，正值为顺时针旋转，负值为逆时针旋转；
-
-2. transform-origin 可以设置旋转轴心（两种方式：一种是 x y 值；一种是关键字如 left、right、top、bottom、left top 等）
-
-## 14.4 斜切：skew
-
-说明：
-
-1. 参数为角度：如果角度为正，则往当前轴的负方向斜切，如果角度为负，则往当前轴的正方向斜切，如下图：（以transform: skew(60deg) 为例）
-
-   ![skew](./images/HTML5+CSS3/skew.png)
-
-2. 参数为两个时，表示先在x斜切，再在y斜切；
-
-3. 特指x或y方向斜切：transform: skewX(xdeg)、transform: skewY(ydeg);
-
-
-
-## 14.5 添加多个transform属性
-
-添加多个 transform是属性时，切记不能一行一行添加，如下：
-
-```
-transform: translate(100px,100px);
-transform: rotate(30deg);
-```
-
-这段CSS代码执行结果是只旋转不移动的。原因是第一条样式已经被第二条样式覆盖了。正确的写法如下：
-
-```
-transform: translate(100px,100px) rotate(30deg);
-```
-
-并且还要注意，**当我们用 transform 的 rotate 进行旋转的，包括坐标系也会被旋转，这就决定了下面这两行代码实现效果是不同的：**
-
-```
-transform: translate(100px,100px) rotate(-90deg);
-transform: rotate(-90deg) translate(100px,100px);
-```
-
-第一行是先向x移动，后旋转，此时是向右移动的；
-
-第二行是先旋转，后移动，此时由于坐标系也旋转了，因此x已经指向上面了，因此是向上移动。
-
-
-
-# 15 transform的3D变换
-
-在CSS3中，我们可以用一个三维坐标系来表示一个3d空间：
-
-![CSS中的3d空间](./images/HTML5+CSS3/CSS中的3d空间.png)
-
-其中，z轴指向的是屏幕向外。
-
-要实现3d的移动、缩放、旋转，也需要用到 transform样式。
-
-## 三维移动
-
-```
-transform: translate3d(x, y, z);
-```
-
-其中x、y、z分别表示x、y、z方向上的偏移像素值。
-
-也可以分开写：translateX(x)、translateY(y)、translateZ(z)
-
-## 三维缩放
-
-```
-transform: scale3d(x, y, z);
-```
-
-其中x、y、z分别表示x、y、z方向上的缩放。缩放值与2d的类似，1不缩放，＜1缩小，＞1放大。
-
-也可以分开写：scaleX(x)、scaleY(y)、scaleZ(z)
-
-## 三维旋转
-
-transform: rotate3d(x, y, z, angle);
-
-这里的x，y，z决定的（x，y，z）其实就是一个向量，相信稍微学过一点数学的人都能理解。
-
-angle代表角度，取正取负有一个很实用的方法：**左手原则，即用左手竖起大拇指，大拇指指向的方向与（x，y，z）向量指向的方向相同，四指环绕的方向即为正方向。**
-
-也可以分开写：
-
-| 写法           | 说明        |
-| -------------- | ----------- |
-| rotateX(angle) | 围绕X轴旋转 |
-| rotateY(angle) | 围绕Y轴旋转 |
-| rotateZ(angle) | 围绕Z轴旋转 |
-
-## 立方体案例
-
-在做立方体之前，先补两个知识：
-
-- **transform-style**：使被转换的子元素（注意是子元素）保留其3d转换（需设置在父元素中），它有如下两个属性值：
-
-| 属性        | 说明 |
-| -------------- | ----------- |
-| flat        | 子元素将不保留其 3D 位置-平面方式。 |
-| preserve-3d | 子元素将保留其 3D 位置—立体方式。   |
-
-- 景深、透视效果：
-
-（1）**perspective(length)** ：为一个元素设置三维透视的距离。仅作用于元素的后代，而不是其元素本身。当perspective:none/0;时，相当于没有设perspective(length)。例如我要建立一个小立方体，长宽高都是200px。如果我将 perspective < 200px ，那就相当于站在盒子里面看的结果，如果perspective 非常大那就是站在非常远的地方看（立方体已经成了小正方形了），意味着**perspective 属性指定了观察者与z=0平面的距离**，使具有三维位置变换的元素产生透视效果
-（2）**perspective-origin**：属性规定了镜头在平面上的位置，默认是放在元素的中心。如perspective-origin: 10px 10px; 表示从右下方观察。
-
-根据3d移动和3d旋转，可以很容易的实现一个立方体，实现效果如下图：
-
-![立方体](./images/HTML5+CSS3/立方体.png)
-
-代码如下：
-
-```html
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-	<meta charset="UTF-8">
-	<title></title>
-	<style type="text/css">
-		.box{
-			width: 200px;
-			height: 200px;
-			margin: 100px auto;
-			position: relative;
-			/* 将立方体旋转一定角度便于观察 */
-			transform: rotate3d(1,1,0,30deg);
-			/*让子元素保留3d变换之后的效果*/
-			transform-style: preserve-3d;
-			/* 景深透视效果 */
-			perspective: 0px;
-			/* 设置景深透视的观察角度 */
-			perspective-origin: 0px 0px;
-		}
-		.box > div{
-			width: 200px;
-			height: 200px;
-			position: absolute;
-			opacity: 0.5;
-		}
-		.front{
-			background-color: red;
-			transform: translateZ(100px);
-		}
-		.back{
-			background-color: blue;
-			transform: translateZ(-100px) rotateX(180deg);
-		}
-		.left{
-			background-color: green;
-			transform: translateX(-100px) rotateY(-90deg);
-		}
-		.right{
-			background-color: orange;
-			transform: translateX(100px) rotateY(90deg); 
-		}
-		.top{
-			background-color: yellow;
-			transform: translateY(-100px) rotateX(90deg);
-		}
-		.bottom{
-			background-color: purple;
-			transform: translateY(100px) rotateX(-90deg);
-		}
-	</style>
-</head>
-<body>
-	<div class="box">
-		<div class="front">front</div>
-		<div class="back">back</div>
-		<div class="left">left</div>
-		<div class="right">right</div>
-		<div class="top">top</div>
-		<div class="bottom">bottom</div>
-	</div>
-</body>
-</html>
-```
-
-
-
-# 16 animation动画
-
-严格上过渡并不算是真正意义上自由的动画，因为它只是初始状态过渡到了最终状态的一个过程。可以理解为只有两个节点。
-
-CSS3的 animation 样式提供了**关键帧**动画，通过关键字 **@keyframes** 配合 **animation** 可以设置多个节点（可理解为帧数）来精确控制一个或一组动画，常用来实现复杂的动画效果。
-
-| 样式                           | 说明                                                      |
-| ------------------------------ | --------------------------------------------------------- |
-| animation-name                 | 指定动画名称                                              |
-| animation-duration             | 设置动画的总耗时，单位为s                                 |
-| animation-iteration-count      | 设置动画播放的次数，参数为数字或infinite（无穷），默认为1 |
-| animation-direction: altermate | 设置交替动画，alternate属性代表来回交替                   |
-| animation-delay                | 设置延迟，单位为s                                         |
-| animation-timing-function      | linear 设置匀速                                           |
-| animation-play-state           | 设置动画播放的状态，running是播放，paused是暂停           |
-
-**animation-fill-mode:**
-
-设置动画结束时的状态，它有三种属性：
-
-（1）**forwards**:会保留动画结束时的状态，在有延迟的情况下，并不会立刻进行到动画的初始状态
-（2）**backwards**:不会保留动画结束时的状态，在添加了动画延迟的前提下，如果动画有初始状态，那么会立刻进行到初始状态
-（3）（默认）**both**:会保留动画的结束时状态，在有延迟的情况下也会立刻进入到动画的初始状态
-
-
-
-@keyframes
-
-@keyframes 指定动画的关键帧，用百分比来将动画分成多个节点（其中0%可用 from 代替，100%可用 to 代替）。我们来看一段它的代码：
-
-```css
-@keyframes flash_name{
-	from{}
-	50%{}
-	to{}
-}
-```
-
-其中 **flash_name** 就是指定的动画名称，它与 **animation-name** 对应。而from{}、50%{}、to{}表示三个节点，可分别在三个节点中添加样式。
-
-## 案例
-
-使用animation动画和transform移动实现无缝的图片滚动：
-
-```html
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-	<meta charset="UTF-8">
-	<title></title>
-	<style>
-		*{
-			margin: 0;
-			padding: 0;
-		}
-		ul,li{
-			list-style: none;
-		}
-		div{
-			width: 800px;
-			height: 150px;
-			margin: 100px auto;
-			overflow: hidden;
-		}
-		ul{
-			width: 200%;
-			animation-name: move;
-			animation-duration: 4s;
-			animation-iteration-count: infinite;
-			/* animation-direction: alternate; */
-			animation-timing-function: linear;
-			animation-fill-mode: backwards;
-		}
-		div:hover ul{
-			animation-play-state: paused;
-		}
-		li{
-			float: left;
-		}
-		img{
-			width: 200px;
-			height: 150px;
-		}
-		@keyframes move{
-			from{
-				transform: translateX(0px);
-			}
-			to{
-				transform: translateX(-800px);
-			}
-		}
-	</style>
-</head>
-<body>
-	<div class="box">
-		<ul>
-			<li><a href=""><img src="./onepiece.jpg" ></a></li>
-			<li><a href=""><img src="./huoying.jpeg" ></a></li>
-			<li><a href=""><img src="./reborn1.jpg" ></a></li>
-			<li><a href=""><img src="./jinji.jpg" ></a></li>
-			<li><a href=""><img src="./onepiece.jpg" ></a></li>
-			<li><a href=""><img src="./huoying.jpeg" ></a></li>
-			<li><a href=""><img src="./reborn1.jpg" ></a></li>
-			<li><a href=""><img src="./jinji.jpg" ></a></li>
-		</ul>
-	</div>
-</body>
-</html>
-```
-
-
-
-## animation 动画库
-
-animate.css 是CSS3的一个动画库，我这里先贴上一个 [animate.css网址](https://daneden.github.io/animate.css/)。可以通过这个网址下载 animate.css，也可以查看它的使用说明，甚至能对库里的动画效果进行演示。
-
-animate.css 动画库的使用我自己认为还是很简单的，毕竟就是一个包含了很多动画效果的 css 文件，很好理解。在使用的时候，我简单地将其分为三步：
-
-（1）调用库：
-
-```html
-<link rel="stylesheet" type="text/css" href="animate.css"/>
-```
-
-（2）添加类：
-
-在 animate.css 中，每种动画都用不同类名区分，若我们想要对某个元素添加某种动画效果，就只需要给这个元素添加对应的类名（注意在通过类名选择动画时，类名除了动画效果本身的类名外，还要有个 **animated** 类名）即可。
-
-当然了，为一个元素添加类名的方法那就多了去了，所以能实现各种方式来展现动画：
-
-```html
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-	<meta charset="UTF-8">
-	<link rel="stylesheet" type="text/css" href="animate.css"/>
-	<title></title>
-	<style type="text/css">
-		div{
-			width: 100px;
-			height: 100px;
-			background-color: #FF6700;
-			margin: 100px auto;
-		}
-	</style>
-</head>
-<body>
-	<div id="demo"></div>
-	<script type="text/javascript">
-		div = document.querySelector("#demo");
-		div.onclick = function(){
-			div.classList.add("animated");
-			div.classList.add("shake");
-			//设置setTimeout,设置在点击元素后移除动画效果,这样2s后再次点击依旧有动画效果
-			setTimeout(function(){
-				div.classList.remove("shake");
-			},2000);
-		}
-	</script>
-</body>
-</html>
-```
-
-（3）自行配置一些动画效果
-
-我们可以自行更改库中的动画的一些参数，比如我嫌上例中 shake 动画摇得太快了，就可以在css样式中将他的 animation-duration 改得大一点：
-
-```css
-#demo{
-	animation-duration: 5s;
-}
-```
 
 
 
