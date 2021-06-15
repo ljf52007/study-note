@@ -3919,7 +3919,31 @@ module.exports = Promise;
 
 
 
+## `requestAnimationFrame`
 
+在`web`应用中,实现动画效果的方法比较多:
+
+`Javascript`可以通过定时器`setTimeout`实现,`CSS3`可以通过`transition`和`animation`实现,`html5`中的`canvas`也可以实现.除此之外,`html5`还提供一个专门用于请求动画的`API`,即`requestAnimationFrame`(rAF),顾名思义,就是"请求动画帧".
+
+> `requestAnimationFrame`解决了什么问题?与`setTimeout`有什么区别?
+
+`requestAnimationFrame`与`setTimeout`类似,与之相比最大的优势是,`rAF`是`由系统来决定回调函数的执行时机`.具体一点讲就是，`系统每次绘制之前会主动调用 rAF 中的回调函数`，如果系统绘制率是 `60Hz`，那么回调函数就每`16.7ms` 被执行一次，如果绘制频率是`75Hz`，那么这个间隔时间就变成了 `1000/75=13.3ms`。换句话说就是，`rAF` 的执行步伐跟着系统的绘制频率走。`它能保证回调函数在屏幕每一次的绘制间隔中只被执行一次`，这样就不会引起丢帧现象，也不会导致动画出现卡顿的问题。               
+
+`requestAnimationFrame`解决了`setTimeout`定时器时间间隔不稳定的问题,`setTimeout`中的回调是异步执行的,需要等待同步任务以及微任务执行完毕后再执行,因此在定时器中设定的时间(如`16.67ms`)是不准确的,这就会导致动画延迟,效果不精确等问题.
+
+> `requestAnimationFrame`怎么使用?兼容性怎么处理?
+
+`requestAnimationFrame`的使用方法与`setTimeout`基本相同,注意`clearTimeout`对应的是`cancelAnimationFrame`.
+
+也正因如此,可以使用`setTimeout`作为处理`requestAnimationFrame`兼容性的备用方法:
+
+```js
+if (!window.requestAnimationFrame) {
+	requestAnimationFrame = function(fn) {
+		setTimeout(fn, 16.67);
+	};
+}
+```
 
 
 
