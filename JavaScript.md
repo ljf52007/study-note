@@ -2083,9 +2083,9 @@ if (Array.isArray(value)){
 
 #### 8.1.5 排序方法
 
-**reserve**()为反转数组
+**reverse**()为反转数组
 
-**sort**()：
+**sort**()：	
 
 1. 默认情况下，sort方法按照升序排列数组项，该方法会调用每个数组项的**toString**方法，然后比较得到的字符串，再确定如何排序。**即使数组中的每一项都是数值，sort方法得到的也是字符串。**
 
@@ -2204,16 +2204,16 @@ console.log(morePeople.indexOf(person))//0
 
 ####  8.1.8 迭代方法
 
-|   名称    |                           参数                            |             返回值              |                             说明                             |
-| :-------: | :-------------------------------------------------------: | :-----------------------------: | :----------------------------------------------------------: |
-|  forEach  |                   `item`,`index`,`arr`                    |           `undefined`           |                                                              |
-|   some    |                   `item`,`index`,`arr`                    |            `boolean`            | `some` 方法查找数组中是否有满足条件的元素,如果找到第一个满足条件的元素,则`return true`终止循环. 不再继续查找 |
-|   every   |                   `item`,`index`,`arr`                    |            `boolean`            | `every`方法查找数组中是否所有元素都满足条件,如果都满足,返回`true`,有一个不满足则返回`false`并终止循环 |
-|  filter   |                   `item`,`index`,`arr`                    |        返回过滤后的数组         | `filter`方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素,主要用于筛选数组,filter中的回调函数有一个要求: 必须返回一个**boolean**值true: **当返回true时, 函数内部会自动将这次回调的 currentValue 加入到新的数组中**false: **当返回false时, 函数内部会过滤掉这次的 currentValue** |
-|    map    |                   `item`,`index`,`arr`                    |          返回新的数组           | `map`方法也是创建一个数组，新数组中的元素是通过回调函数的返回值决定的 |
-|   find    |                   `item`,`index`,`arr`                    |         匹配的`item`值          |    `find`用于筛选原数组中符合条件的某一项,找到则终止循环     |
-| findIndex |                   `item`,`index`,`arr`                    | 匹配的`index`值，找不到则返回-1 | `findIndex`类似于find,用于筛选原数组中符合条件的某一项的索引,找到则终止循环 |
-|  reduce   | （`preValue`,`curValue`,`index`,`arr`）=> {}，`initValue` |    最后一次迭代的`return`值     | reduce() 常用于对数组中所有的元素进行汇总，上述代码中 **preValue 指的是前一次遍历中的 return 值**，**可以设置它的初始值（如上述代码中初始值为0 ）** |
+|    名称     |                           参数                            |             返回值              |                             说明                             |
+| :---------: | :-------------------------------------------------------: | :-----------------------------: | :----------------------------------------------------------: |
+|  `forEach`  |                   `item`,`index`,`arr`                    |           `undefined`           |                                                              |
+|   `some`    |                   `item`,`index`,`arr`                    |            `boolean`            | `some` 方法查找数组中是否有满足条件的元素,如果找到第一个满足条件的元素,则`return true`终止循环. 不再继续查找 |
+|   `every`   |                   `item`,`index`,`arr`                    |            `boolean`            | `every`方法查找数组中是否所有元素都满足条件,如果都满足,返回`true`,有一个不满足则返回`false`并终止循环 |
+|  `filter`   |                   `item`,`index`,`arr`                    |        返回过滤后的数组         | `filter`方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素,主要用于筛选数组,filter中的回调函数有一个要求: 必须返回一个**boolean**值true: **当返回true时, 函数内部会自动将这次回调的 currentValue 加入到新的数组中**false: **当返回false时, 函数内部会过滤掉这次的 currentValue** |
+|    `map`    |                   `item`,`index`,`arr`                    |          返回新的数组           | `map`方法也是创建一个数组，新数组中的元素是通过回调函数的返回值决定的 |
+|   `find`    |                   `item`,`index`,`arr`                    |         匹配的`item`值          |    `find`用于筛选原数组中符合条件的某一项,找到则终止循环     |
+| `findIndex` |                   `item`,`index`,`arr`                    | 匹配的`index`值，找不到则返回-1 | `findIndex`类似于find,用于筛选原数组中符合条件的某一项的索引,找到则终止循环 |
+|  `reduce`   | （`preValue`,`curValue`,`index`,`arr`）=> {}，`initValue` |    最后一次迭代的`return`值     | reduce() 常用于对数组中所有的元素进行汇总，上述代码中 **preValue 指的是前一次遍历中的 return 值**，**可以设置它的初始值（如上述代码中初始值为0 ）** |
 
 
 
