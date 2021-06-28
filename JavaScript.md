@@ -3907,6 +3907,54 @@ module.exports = Promise;
 
 
 
+### `Promise.resolve()`
+
+`Promise.resolve()`传入的参数可分为四种情况:
+
+1. `Promise`实例`
+
+   如果参数是一个`Promise`实例,那么`Promise.resolve()`将原封不动地返回这个实例.
+
+2. `thenable`对象
+
+   `thenable`对象指的是具有`then`方法的对象,如:
+
+   ```js
+   let thenable = {
+   	then: (resolve, reject) => {
+           resolve('then')
+       }	
+   }
+   ```
+
+   `Promise.resolve()`会将这个对象转换为一个`Promise`对象,并立即执行`thenable`对象的`then`方法.如:
+
+   ```js
+   let p1 = Promise.resolve(thenable);
+   p1.then(res => {
+       console.log(res); // then
+   });
+   ```
+
+3. 不具有`then`方法的对象
+
+   如果参数是不具有`then`方法的对象,`Promise.resolve()`返回一个新的`Promise`,并将参数`resolve`出去.如:
+
+   ```js
+   const p = Promise.resolve('then');
+   p.then(res => {
+       console.log(res); // then
+   });
+   ```
+
+4. 不传参数
+
+   如果不传任何参数,实际上处理方式和第三种情况是相同的,`Promise.resolve()`会返回一个新的`Promise`,并`resolve`出去;
+
+
+
+
+
 ## `requestAnimationFrame`
 
 在`web`应用中,实现动画效果的方法比较多:
