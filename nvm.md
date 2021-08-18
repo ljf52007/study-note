@@ -1,19 +1,21 @@
-
-
-# nvm
-
 ## 安装
 
-nvm可以在我们的项目中指定node的版本号，先来看看nvm怎么安装：
+`nvm`可以在我们的项目中指定`node`的版本号，先来看看`nvm`怎么安装：
 
-nvm 的windows下载地址：https://github.com/coreybutler/nvm-windows/releases，选择第二个nvm-setup.zip，这样安装方便些。
+`nvm`的`windows`下载地址：
 
-将下载的文件进行解压：nvm-setup.exe，单击开始安装，直接点击下一步解可以，当然我们需要注意一下两个界面：
-设置nvm中root路径(相当于setting.txt中的root:)：
+```
+https://github.com/coreybutler/nvm-windows/releases
+```
 
-设置nvm中path路径(相当于setting.txt中的path:)：
+选择第二个`nvm-setup.zip`，这样安装方便些。
 
-这样我们就在windows下面的nvm安装完成了！
+将下载的文件进行解压：`nvm-setup.exe`，单击开始安装，直接点击下一步解可以，当然我们需要注意一下两个界面：
+设置`nvm`中`root`路径(相当于`setting.txt`中的`root`)
+
+设置`nvm`中`path`路径(相当于`setting.txt`中的`path`)
+
+安装完成.
 
 ## 配置
 
@@ -28,7 +30,7 @@ nvm node_mirror https://npm.taobao.org/mirrors/node/
 nvm npm_mirror  https://npm.taobao.org/mirrors/npm/
 ```
 
-## windows下的命令
+## `windows`下的命令
 
 ```
 nvm arch                         查看当前系统的位数和当前nodejs的位数

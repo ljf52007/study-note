@@ -2,15 +2,21 @@
 
 廖雪峰的git介绍：
 
+```
 https://www.liaoxuefeng.com/wiki/896043488029600/896202780297248
+```
 
 git的简易使用指南网：
 
+```
 https://bootcss.com/p/git-guide
+```
 
 一篇学习git的好文章：
 
+```
 https://www.jianshu.com/p/072587b47515
+```
 
 
 
@@ -303,8 +309,12 @@ https://www.jianshu.com/p/072587b47515
 
 3. 合并和衍合的区别： 
 
-   - 官方解释：https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%8F%98%E5%9F%BA
+   - 官方解释：
 
+     ```
+     https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%8F%98%E5%9F%BA
+     ```
+   
    - 我的理解：
      1. 首先从结果上看，不管是merge合并还是rebase衍合，结果都是一样的；
 
@@ -312,30 +322,30 @@ https://www.jianshu.com/p/072587b47515
 
         - 合并：
 
-        ![merge](D:\front-end-note\images\git\merge.png)
+        ![merge](https://gitee.com/ljf52007/note/raw/master/images/git/merge.png)
 
         - 衍合：衍合的原理是首先找到这两个分支（即当前分支 `experiment`、变基操作的目标基底分支 `master`） 的**最近共同祖先** `C2`，然后对比当前分支`experiment`相对于该祖先的历次提交，**提取相应的修改并存为临时文件**， 然后将当前分支指向目标基底 `C3`, 最后以此将之前另存为临时文件的修改依序应用。
 
-        ![rebase](D:\front-end-note\images\git\rebase.png)
+        ![rebase](https://gitee.com/ljf52007/note/raw/master/images/git/rebase.png)
 
         
-
+   
      3. 执行衍合的命令
 
         ```bash
         git rebase master experiment
         ```
-
+   
         经过以下的过程：
-
+   
         - 切换到当前分支`experiment`
         - 将`experiment`中比`master`多的`commit`撤销，并将这些`commit`存放在一块临时存储区（`.git/rebase`）
         - 将`master`中比`experiment`多的`commit`应用到`experiment`上，此时两个分支的状态一致
         - 将临时存储区的`commit`重新应用到`experiment`上
         - 解决冲突
-
+   
      4. 衍合并不是完美无缺的，它需要遵循一条准则：**如果提交存在于你的仓库之外，而别人可能基于这些提交进行开发，那么不要执行变基。**
-
+   
         意思就是如果你在`experiment`的`commit`已经被你的同事拉下来并进行开发了，此时合并代码就不用`rebase`，而用`merge`
 
 
@@ -410,26 +420,14 @@ https://www.jianshu.com/p/072587b47515
 
 ### 3 实操
 
+1. 工作中，我提交并推送代码到了远端，这时我发现有一个文件是错的，此时正确的做法是：
 
+   ```shell
+   # 回退推送的版本
+   # 首先打印日志
+   git log 
+   # 然后确定要撤销哪个版本A，回退到哪个版本B，执行
+   git reset --soft B
+   ```
 
-工作中，我提交并推送代码到了远端，这时我发现有一个文件是错的，此时正确的做法是：
-
-```bash
-# 回退推送的版本
-# 首先打印日志
-git log 
-# 然后确定要撤销哪个版本A，回退到哪个版本B，执行
-git reset --soft B
-```
-
-或者直接修改错误文件，重新提交和推送。
-
-但是我犯傻，用`revert`执行了撤销提交的命令：
-
-```bash
-# <commit>是指定提交的提交ID，可以在log中查看
-git log
-git revert <commit>
-```
-
-这时就有点尴尬了，此时推送到远端的版本并没有回退，但`commit`已经回退了，且`log`中
+   或者直接修改错误文件，重新提交和推送。
