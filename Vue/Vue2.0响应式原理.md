@@ -1,3 +1,92 @@
+`Vue2.x`响应式原理核心是`Object.defineProperty`;
+
+- 简单来说,`Vue`在初始化数据时,会根据用户传入的`data`重新定义一个`Observer`类型的对象,该对象对`data`中所有的属性通过`Object.defineProperty`添加访问器属性`getter`和`setter`,用来对数据进行劫持:
+
+  - 当读取`data`中的数据时,自动调用`get`方法,对依赖进行收集(收集当前组件的`Watcher`);
+
+  - 当修改`data`中的数据时,自动调用`set`方法,通知相关依赖进行更新操作.
+
+- 具体来说(从源码角度出发)
+
+  1. `Vue`在`initData()`的时候,会通过`vm.$options.data`拿到用户输入的数据,通过调用`observe`方法对其进行观测.
+
+     ```js
+     function initData(vm: Component) {
+     	let data = vm.$options.data;
+         ...
+         observe(data, true /* asRootData */);
+     }
+     ```
+
+  2. `observe`方法返回一个`Observer`类型的实例
+
+     ```js
+     export function observe (value: any, asRootData: ?boolean): Observer | void {
+         ...
+         ob = new Observer(value);
+         ...
+         return ob;
+     }
+     ```
+
+  3. 在`Observer`构造函数内部,区分传入的数据为数组还是对象:
+
+     如果是数组,则遍历数组,对数组的每一项递归调用`observe`;
+
+     如果是对象,则调用`walk`方法,遍历数据的属性,通过`defineReactive`方法为属性添加访问器属性`getter`和`setter`;
+
+     ```js
+     export class Observer {
+       value: any;
+       dep: Dep;
+       vmCount: number; // number of vms that have this object as root $data
+     
+       constructor (value: any) {
+         this.value = value
+         this.dep = new Dep()
+         this.vmCount = 0
+         def(value, '__ob__', this) // 给数据添加已观测标识
+         if (Array.isArray(value)) { // 如果是数组
+           if (hasProto) {
+             protoAugment(value, arrayMethods)
+           } else {
+             copyAugment(value, arrayMethods, arrayKeys)
+           }
+           this.observeArray(value) // 遍历数组的每一项,递归调用observe
+         } else {
+           this.walk(value) // 调用walk方法
+         }
+       }
+     
+       walk (obj: Object) {
+         const keys = Object.keys(obj)
+         // 遍历对象属性,为每一个属性执行defineReactive
+         for (let i = 0; i < keys.length; i++) {
+           defineReactive(obj, keys[i])
+         }
+       }
+     ```
+
+     
+
+  4. `defineReactive`方法是数据响应的核心方法,它的核心就是通过`Object.defineProperty`对数据进行劫持,实现数据响应式.
+
+     `Object.defineProperty`
+
+     
+
+     
+
+     为`Object.defineProperty`提供了一个闭包环境.
+
+     `defineReactive`为数据属性添加访问器属性`getter`和`setter`.
+
+     当读取数据中的某个属性时,触发`get`方法,
+
+
+
+
+
 `Vue2.0`的响应式原理核心是通过`ES5`的`Object.defineProperty`中访问器属性的`get`和`set`方法.`data`中声明的属性都被添加了访问器属性,当读取`data`中的数据时,自动调用`get`方法;当修改`data`中的数据时,自动调用`set`方法.
 
 检测到数据的变化,会通知观察者`Watcher`.观察者`Watcher`自动触发重新`render`当前组件(子组件不会重新渲染),生成新的虚拟`DOM`树.如下图:
