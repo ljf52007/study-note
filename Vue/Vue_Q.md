@@ -2,7 +2,9 @@
 
 ![](https://gitee.com/ljf52007/note/raw/master/images/Vue/lifecycle.png)
 
+注释:
 
+![](https://gitee.com/ljf52007/note/raw/master/images/Vue/lifecycle_cn.png)
 
 > 生命周期钩子调用的时机
 
@@ -58,6 +60,8 @@
 
 
 > 有什么方法可以在`created`中实现`DOM`操作?
+
+`vm.$nextTick()`,可以让我们在下次`DOM`更新循环结束之后执行延迟回调,用于获取更新后的`DOM`.
 
 
 
