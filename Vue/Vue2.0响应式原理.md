@@ -1,8 +1,8 @@
 `Vue2.x`响应式原理核心是`Object.defineProperty`;
 
-- 简单来说,`Vue`在初始化数据时,会根据用户传入的`data`重新定义一个`Observer`类型的对象,该对象对`data`中所有的属性通过`Object.defineProperty`添加访问器属性`getter`和`setter`,用来对数据进行劫持:
+- 简单来说,`Vue`在初始化数据时,会根据用户传入的`data`重新定义一个`Observer`类型的对象,该对象对`data`中所有的属性通过`Object.defineProperty`添加访问器属性`getter`和`setter`,用来对数据进行观测:
 
-  - 当读取`data`中的数据时,自动调用`get`方法,对依赖进行收集(收集当前组件的`Watcher`;
+  - 当读取`data`中的数据时,自动调用`get`方法,对依赖进行收集(收集当前组件的`Watcher`);
 
   - 当修改`data`中的数据时,自动调用`set`方法,通知相关依赖进行更新操作.
 
@@ -71,17 +71,85 @@
 
   4. `defineReactive`方法是数据响应的核心方法,它的核心就是通过`Object.defineProperty`对数据进行劫持,实现数据响应式.
 
-     `Object.defineProperty`
-
+     ```js
+     /**
+      * Define a reactive property on an Object.
+      */
+     export function defineReactive (
+       obj: Object,
+       key: string,
+       val: any,
+       customSetter?: ?Function,
+       shallow?: boolean
+     ) {
+       const dep = new Dep()
      
-
+       const property = Object.getOwnPropertyDescriptor(obj, key)
+       if (property && property.configurable === false) {
+         return
+       }
      
+       // cater for pre-defined getter/setters
+       const getter = property && property.get
+       const setter = property && property.set
+       if ((!getter || setter) && arguments.length === 2) {
+         val = obj[key]
+       }
+     
+       let childOb = !shallow && observe(val)
+       
+       // 核心方法Object.defineProperty
+       Object.defineProperty(obj, key, {
+         enumerable: true,
+         configurable: true,
+         get: function reactiveGetter () {
+           const value = getter ? getter.call(obj) : val
+           if (Dep.target) {
+             dep.depend()
+             if (childOb) {
+               childOb.dep.depend()
+               if (Array.isArray(value)) {
+                 dependArray(value)
+               }
+             }
+           }
+           return value
+         },
+         set: function reactiveSetter (newVal) {
+           const value = getter ? getter.call(obj) : val
+           /* eslint-disable no-self-compare */
+           if (newVal === value || (newVal !== newVal && value !== value)) {
+             return
+           }
+           /* eslint-enable no-self-compare */
+           if (process.env.NODE_ENV !== 'production' && customSetter) {
+             customSetter()
+           }
+           // #7981: for accessor properties without setter
+           if (getter && !setter) return
+           if (setter) {
+             setter.call(obj, newVal)
+           } else {
+             val = newVal
+           }
+           childOb = !shallow && observe(newVal)
+           dep.notify()
+         }
+       })
+     }
+     ```
+     
+  5. 可以看到,
 
-     为`Object.defineProperty`提供了一个闭包环境.
 
-     `defineReactive`为数据属性添加访问器属性`getter`和`setter`.
 
-     当读取数据中的某个属性时,触发`get`方法,
+
+
+
+
+
+
+
 
 
 
